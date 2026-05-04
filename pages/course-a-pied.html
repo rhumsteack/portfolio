@@ -668,14 +668,6 @@
                 scrollWheelZoom: false
             }).setView([45.76, 4.84], 6);
 
-            if (!IS_FILE_PROTOCOL) {
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 18,
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(adventureMap);
-                return;
-            }
-
             L.rectangle([
                 [-85, -180],
                 [85, 180]
@@ -934,7 +926,7 @@
         }
 
         function getEuropeBorderLayer() {
-            if (!IS_FILE_PROTOCOL || EUROPE_BORDER_RINGS.length === 0) {
+            if (EUROPE_BORDER_RINGS.length === 0) {
                 return null;
             }
 
@@ -1027,11 +1019,9 @@
                 return;
             }
 
-            if (IS_FILE_PROTOCOL) {
-                const countryBorderLayer = getEuropeBorderLayer();
-                if (countryBorderLayer) {
-                    adventureCountryLayer = countryBorderLayer.addTo(adventureMap);
-                }
+            const countryBorderLayer = getEuropeBorderLayer();
+            if (countryBorderLayer) {
+                adventureCountryLayer = countryBorderLayer.addTo(adventureMap);
             }
 
             if (travelRoute.length >= 2) {
