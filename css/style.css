@@ -141,7 +141,10 @@ body {
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.5rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .sys-blink {
@@ -239,6 +242,7 @@ body {
 .stats-row {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 1.5rem;
 }
 
@@ -834,5 +838,24 @@ body {
     .contact-text {
         letter-spacing: 0.08em;
         font-size: 0.64rem;
+    }
+
+    .system-tag {
+        font-size: 0.6rem;
+        letter-spacing: 0.1em;
+    }
+
+    .curiosity-head {
+        margin-right: 0;
+    }
+
+    .curiosity-item .scouter-icon {
+        position: static;
+        right: auto;
+        top: auto;
+    }
+
+    .page-container {
+        padding: 1rem 1rem 1rem;
     }
 }
