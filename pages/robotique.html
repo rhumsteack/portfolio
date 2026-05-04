@@ -335,6 +335,7 @@
 
             let celebrationTicks = 0;
             let frameTick = 0;
+            let prevCanvasSize = null;
 
             const state = {
                 baseAngle: -0.7,
@@ -382,11 +383,24 @@
                 const dpr = Math.max(1, window.devicePixelRatio || 1);
                 const width = Math.max(280, Math.floor(stage.clientWidth));
                 const height = Math.floor(width * 0.56);
+
+                if (prevCanvasSize && (prevCanvasSize.width !== width || prevCanvasSize.height !== height)) {
+                    const scaleX = width / prevCanvasSize.width;
+                    const scaleY = height / prevCanvasSize.height;
+                    state.cubes.forEach((cube, i) => {
+                        if (cube.moved && state.holding !== i) {
+                            cube.x = cube.x * scaleX;
+                            cube.y = cube.y * scaleY;
+                        }
+                    });
+                }
+
                 canvas.width = Math.floor(width * dpr);
                 canvas.height = Math.floor(height * dpr);
                 canvas.style.width = width + 'px';
                 canvas.style.height = height + 'px';
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                prevCanvasSize = { width, height };
                 return { width, height };
             }
 
