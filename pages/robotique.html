@@ -41,6 +41,8 @@
             font-size: 0.72rem;
             letter-spacing: 0.06em;
             color: var(--color-muted);
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .robot-game-stage {
@@ -72,11 +74,15 @@
             color: #d4c2ff;
             font-family: var(--font-mono);
             font-size: 0.68rem;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.04em;
             padding: 0.55rem 0.5rem;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            word-break: break-word;
         }
 
         .robot-game-btn:hover {
@@ -98,6 +104,8 @@
             font-family: var(--font-mono);
             font-size: 0.72rem;
             color: var(--color-text);
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .robot-game-status strong {
