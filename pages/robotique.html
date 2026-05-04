@@ -219,44 +219,42 @@
             </div>
         </div>
 
-        <div class="content-grid">
-            <div class="content-block">
-                <h2 class="block-title">STACK TECHNIQUE</h2>
-                <ul class="block-list">
-                    <li>Base technique : électronique embarquée + code applicatif + interface simple pour interagir</li>
-                    <li>Peppy : focus sur l'autonomie, la sobriété énergétique, pas de logique embarquée</li>
-                    <li>Toby : logique d'états, réactions rapides et interactions fun avec l'utilisateur</li>
-                    <li>Cubie : compagnon de bureau, événements contextuels et usage pratique tous les jours</li>
-                    <li>Kode Dot : approche orientée sécurité, durcissement et bonnes pratiques d'accès</li>
-                </ul>
-            </div>
+        <div class="content-block">
+            <h2 class="block-title">STACK TECHNIQUE</h2>
+            <ul class="block-list">
+                <li>Base technique : électronique embarquée + code applicatif + interface simple pour interagir</li>
+                <li>Peppy : focus sur l'autonomie, la sobriété énergétique, pas de logique embarquée</li>
+                <li>Toby : logique d'états, réactions rapides et interactions fun avec l'utilisateur</li>
+                <li>Cubie : compagnon de bureau, événements contextuels et usage pratique tous les jours</li>
+                <li>Kode Dot : approche orientée sécurité, durcissement et bonnes pratiques d'accès</li>
+            </ul>
+        </div>
 
-            <div class="content-block">
-                <h2 class="block-title">MINI JEU : BRAS ROBOTIQUE</h2>
-                <div class="robot-game-wrap">
-                    <p class="robot-game-hint">
-                        Objectif : déplacer les 3 cubes dans la zone cible a droite. Oriente le bras, ferme la pince pour saisir et ouvre la pince pour deposer.
-                    </p>
+        <div class="content-block">
+            <h2 class="block-title">MINI JEU : BRAS ROBOTIQUE</h2>
+            <div class="robot-game-wrap">
+                <p class="robot-game-hint">
+                    Objectif : déplacer les 3 cubes dans la zone cible a droite. Oriente le bras, ferme la pince pour saisir et ouvre la pince pour deposer.
+                </p>
 
-                    <div class="robot-game-stage">
-                        <canvas id="robot-game-canvas" class="robot-game-canvas" aria-label="Mini jeu bras robotique" role="img"></canvas>
-                    </div>
+                <div class="robot-game-stage">
+                    <canvas id="robot-game-canvas" class="robot-game-canvas" aria-label="Mini jeu bras robotique" role="img"></canvas>
+                </div>
 
-                    <div class="robot-game-panel" aria-label="Panneau de commandes du bras robotique">
-                        <button class="robot-game-btn" data-action="base-left" type="button">BASE - [Q/A/←]</button>
-                        <button class="robot-game-btn" data-action="base-right" type="button">BASE + [D/→]</button>
-                        <button class="robot-game-btn" data-action="elbow-left" type="button">COUDE - [Z/W/↑]</button>
-                        <button class="robot-game-btn" data-action="elbow-right" type="button">COUDE + [S/↓]</button>
-                        <button class="robot-game-btn" data-action="claw-open" type="button">PINCE OUVRIR [E/O]</button>
-                        <button class="robot-game-btn" data-action="claw-close" type="button">PINCE FERMER [X/C]</button>
-                        <button class="robot-game-btn" data-action="reset" type="button">RESET [R]</button>
-                    </div>
+                <div class="robot-game-panel" aria-label="Panneau de commandes du bras robotique">
+                    <button class="robot-game-btn" data-action="base-left" type="button">BASE - [Q/A/←]</button>
+                    <button class="robot-game-btn" data-action="base-right" type="button">BASE + [D/→]</button>
+                    <button class="robot-game-btn" data-action="elbow-left" type="button">COUDE - [Z/W/↑]</button>
+                    <button class="robot-game-btn" data-action="elbow-right" type="button">COUDE + [S/↓]</button>
+                    <button class="robot-game-btn" data-action="claw-open" type="button">PINCE OUVRIR [E/O]</button>
+                    <button class="robot-game-btn" data-action="claw-close" type="button">PINCE FERMER [X/C]</button>
+                    <button class="robot-game-btn" data-action="reset" type="button">RESET [R]</button>
+                </div>
 
-                    <div class="robot-game-status" aria-live="polite">
-                        <span>Cubes places : <strong id="robot-game-placed">0/3</strong></span>
-                        <span>Etat pince : <strong id="robot-game-claw">OUVERTE</strong></span>
-                        <span id="robot-game-message"><strong>En cours...</strong></span>
-                    </div>
+                <div class="robot-game-status" aria-live="polite">
+                    <span>Cubes places : <strong id="robot-game-placed">0/3</strong></span>
+                    <span>Etat pince : <strong id="robot-game-claw">OUVERTE</strong></span>
+                    <span id="robot-game-message"><strong>En cours...</strong></span>
                 </div>
             </div>
         </div>
