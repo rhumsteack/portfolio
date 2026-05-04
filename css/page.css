@@ -320,8 +320,11 @@ body {
     font-size: 0.8rem;
     color: var(--color-text);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.6rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
 }
 
 .block-list li::before {
