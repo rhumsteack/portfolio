@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://rhumsteack.github.io/sitemap.xml
+Sitemap: https://rhumsteack.github.io/portfolio/sitemap.xml
