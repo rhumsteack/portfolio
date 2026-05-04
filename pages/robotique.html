@@ -391,14 +391,22 @@
                 const height = Math.floor(width * 0.56);
 
                 if (prevCanvasSize && (prevCanvasSize.width !== width || prevCanvasSize.height !== height)) {
-                    const scaleX = width / prevCanvasSize.width;
-                    const scaleY = height / prevCanvasSize.height;
-                    state.cubes.forEach((cube, i) => {
-                        if (cube.moved && state.holding !== i) {
-                            cube.x = cube.x * scaleX;
-                            cube.y = cube.y * scaleY;
-                        }
-                    });
+                    // Changement d'orientation : portrait↔paysage → on réinitialise
+                    const wasLandscape = prevCanvasSize.width > prevCanvasSize.height;
+                    const isLandscape  = width > height;
+                    if (wasLandscape !== isLandscape) {
+                        resetGame();
+                    } else {
+                        // Simple redimensionnement : on rescale les cubes
+                        const scaleX = width / prevCanvasSize.width;
+                        const scaleY = height / prevCanvasSize.height;
+                        state.cubes.forEach((cube, i) => {
+                            if (cube.moved && state.holding !== i) {
+                                cube.x = cube.x * scaleX;
+                                cube.y = cube.y * scaleY;
+                            }
+                        });
+                    }
                 }
 
                 canvas.width = Math.floor(width * dpr);
@@ -408,6 +416,17 @@
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 prevCanvasSize = { width, height };
                 return { width, height };
+            }
+
+            let resizeRafId = null;
+            function onResize() {
+                if (resizeRafId) cancelAnimationFrame(resizeRafId);
+                resizeRafId = requestAnimationFrame(() => {
+                    resizeRafId = requestAnimationFrame(() => {
+                        resizeCanvas();
+                        resizeRafId = null;
+                    });
+                });
             }
 
             function getWorld() {
@@ -794,7 +813,8 @@
 
             resetGame();
             resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+            window.addEventListener('resize', onResize);
+            screen.orientation && screen.orientation.addEventListener('change', onResize);
             render();
         })();
     </script>
