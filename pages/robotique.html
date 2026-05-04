@@ -356,14 +356,13 @@
             };
 
             const baseCubes = [
-                { x: 16, y: 0, color: '#ff6fa2' },
-                { x: 16, y: 0, color: '#7fd7ff' },
-                { x: 16, y: 0, color: '#a4ff9f' },
+                { color: '#ff6fa2' },
+                { color: '#7fd7ff' },
+                { color: '#a4ff9f' },
             ];
 
-            function getCubeSize() {
-                const w = Math.max(200, stage.clientWidth);
-                return Math.round(30 * (w / 560));
+            function getCubeSize(w) {
+                return Math.max(14, Math.round(w * 0.054));
             }
 
             const limits = {
@@ -386,26 +385,37 @@
                 state.holding = -1;
                 state.won = false;
                 state.initialStackActive = true;
-                const sz = getCubeSize();
-                state.cubes = baseCubes.map(c => ({ ...c, size: sz, moved: false }));
+                const w = Math.max(200, stage.clientWidth);
+                const sz = getCubeSize(w);
+                state.cubes = baseCubes.map(c => ({ ...c, x: 0, y: 0, size: sz, moved: false }));
                 fireworks.length = 0;
                 celebrationTicks = 0;
                 messageEl.innerHTML = '<strong>En cours...</strong>';
             }
 
             function resizeCanvas() {
+                // Effacer les styles inline avant de mesurer pour éviter que le canvas étire son parent
+                canvas.style.width = '';
+                canvas.style.height = '';
+
                 const dpr = Math.max(1, window.devicePixelRatio || 1);
                 const width = Math.max(200, Math.floor(stage.clientWidth));
                 const height = Math.floor(width * 0.56);
 
                 if (prevCanvasSize && (prevCanvasSize.width !== width || prevCanvasSize.height !== height)) {
-                    // Changement d'orientation : portrait↔paysage → on réinitialise
                     const wasLandscape = prevCanvasSize.width > prevCanvasSize.height;
                     const isLandscape  = width > height;
                     if (wasLandscape !== isLandscape) {
+                        // Changement d'orientation : reset complet
+                        canvas.width = Math.floor(width * dpr);
+                        canvas.height = Math.floor(height * dpr);
+                        canvas.style.width = width + 'px';
+                        canvas.style.height = height + 'px';
+                        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                        prevCanvasSize = { width, height };
                         resetGame();
+                        return { width, height };
                     } else {
-                        // Simple redimensionnement : on rescale les cubes
                         const scaleX = width / prevCanvasSize.width;
                         const scaleY = height / prevCanvasSize.height;
                         state.cubes.forEach((cube, i) => {
@@ -440,25 +450,26 @@
             function getWorld() {
                 const w = canvas.clientWidth;
                 const h = canvas.clientHeight;
-                const s = w / 560; // facteur d'échelle basé sur largeur de référence
-                const floorY = h - Math.round(42 * (h / 313));
-                const targetW = Math.round(150 * s);
-                const targetH = Math.round(88 * (h / 313));
+                const floorY = Math.round(h * 0.86);
+                // Zone cible : droite du canvas, accessible par le bras
+                const targetW = Math.round(w * 0.30);
+                const targetH = Math.round(h * 0.28);
                 const target = {
-                    x: w - Math.round(185 * s),
+                    x: Math.round(w * 0.64),
                     y: floorY - targetH,
                     w: targetW,
                     h: targetH,
                 };
-                return { w, h, floorY, target, s };
+                return { w, h, floorY, target };
             }
 
             function getArmPoints(world) {
-                const s = world.s;
-                const base = { x: Math.round(120 * s), y: world.floorY };
-                const l1 = Math.round(125 * s);
-                const l2 = Math.round(96 * s);
-                const wristExt = Math.round(20 * s);
+                const w = world.w;
+                // Géométrie 100% proportionnelle — portée max ≈ 62% de w, cible à 64%
+                const base = { x: Math.round(w * 0.15), y: world.floorY };
+                const l1 = Math.round(w * 0.245);
+                const l2 = Math.round(w * 0.185);
+                const wristExt = Math.round(w * 0.04);
 
                 const elbow = {
                     x: base.x + Math.cos(state.baseAngle) * l1,
@@ -477,13 +488,15 @@
             }
 
             function placeInitialStack(world) {
+                const margin = Math.round(world.w * 0.03);
+                const spacing = Math.round(world.w * 0.068);
                 state.cubes.forEach((cube, i) => {
                     if (state.holding === i) return;
                     if (state.initialStackActive) {
-                        cube.x = 16;
+                        cube.x = margin;
                         cube.y = world.floorY - cube.size * (i + 1);
                     } else if (!cube.moved) {
-                        cube.x = 16 + i * 38;
+                        cube.x = margin + i * spacing;
                         cube.y = world.floorY - cube.size;
                         cube.moved = true;
                     }
@@ -571,7 +584,7 @@
                     const dx = cx - arm.grip.x;
                     const dy = cy - arm.grip.y;
                     const dist = Math.hypot(dx, dy);
-                    const grabRadius = Math.round(34 * world.s);
+                    const grabRadius = Math.round(world.w * 0.06);
                     if (dist < bestDist && dist < grabRadius) {
                         bestDist = dist;
                         best = i;
