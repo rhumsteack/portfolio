@@ -219,19 +219,20 @@
             </div>
         </div>
 
-        <div class="content-block">
-            <h2 class="block-title">STACK TECHNIQUE</h2>
-            <ul class="block-list">
-                <li>Base technique : électronique embarquée + code applicatif + interface simple pour interagir</li>
-                <li>Peppy : focus sur l'autonomie, la sobriété énergétique, pas de logique embarquée</li>
-                <li>Toby : logique d'états, réactions rapides et interactions fun avec l'utilisateur</li>
-                <li>Cubie : compagnon de bureau, événements contextuels et usage pratique tous les jours</li>
-                <li>Kode Dot : approche orientée sécurité, durcissement et bonnes pratiques d'accès</li>
-            </ul>
-        </div>
+        <div class="content-grid">
+            <div class="content-block">
+                <h2 class="block-title">STACK TECHNIQUE</h2>
+                <ul class="block-list">
+                    <li>Base technique : électronique embarquée + code applicatif + interface simple pour interagir</li>
+                    <li>Peppy : focus sur l'autonomie, la sobriété énergétique, pas de logique embarquée</li>
+                    <li>Toby : logique d'états, réactions rapides et interactions fun avec l'utilisateur</li>
+                    <li>Cubie : compagnon de bureau, événements contextuels et usage pratique tous les jours</li>
+                    <li>Kode Dot : approche orientée sécurité, durcissement et bonnes pratiques d'accès</li>
+                </ul>
+            </div>
 
-        <div class="content-block">
-            <h2 class="block-title">MINI JEU : BRAS ROBOTIQUE</h2>
+            <div class="content-block">
+                <h2 class="block-title">MINI JEU : BRAS ROBOTIQUE</h2>
             <div class="robot-game-wrap">
                 <p class="robot-game-hint">
                     Objectif : déplacer les 3 cubes dans la zone cible a droite. Oriente le bras, ferme la pince pour saisir et ouvre la pince pour deposer.
@@ -256,6 +257,7 @@
                     <span>Etat pince : <strong id="robot-game-claw">OUVERTE</strong></span>
                     <span id="robot-game-message"><strong>En cours...</strong></span>
                 </div>
+            </div>
             </div>
         </div>
 
@@ -354,10 +356,15 @@
             };
 
             const baseCubes = [
-                { x: 16, y: 0, size: 30, color: '#ff6fa2' },
-                { x: 16, y: 0, size: 30, color: '#7fd7ff' },
-                { x: 16, y: 0, size: 30, color: '#a4ff9f' },
+                { x: 16, y: 0, color: '#ff6fa2' },
+                { x: 16, y: 0, color: '#7fd7ff' },
+                { x: 16, y: 0, color: '#a4ff9f' },
             ];
+
+            function getCubeSize() {
+                const w = Math.max(200, stage.clientWidth);
+                return Math.round(30 * (w / 560));
+            }
 
             const limits = {
                 baseMin: -2.7,
@@ -379,7 +386,8 @@
                 state.holding = -1;
                 state.won = false;
                 state.initialStackActive = true;
-                state.cubes = baseCubes.map(c => ({ ...c, moved: false }));
+                const sz = getCubeSize();
+                state.cubes = baseCubes.map(c => ({ ...c, size: sz, moved: false }));
                 fireworks.length = 0;
                 celebrationTicks = 0;
                 messageEl.innerHTML = '<strong>En cours...</strong>';
@@ -432,21 +440,25 @@
             function getWorld() {
                 const w = canvas.clientWidth;
                 const h = canvas.clientHeight;
-                const floorY = h - 42;
+                const s = w / 560; // facteur d'échelle basé sur largeur de référence
+                const floorY = h - Math.round(42 * (h / 313));
+                const targetW = Math.round(150 * s);
+                const targetH = Math.round(88 * (h / 313));
                 const target = {
-                    x: w - 185,
-                    y: floorY - 92,
-                    w: 150,
-                    h: 88,
+                    x: w - Math.round(185 * s),
+                    y: floorY - targetH,
+                    w: targetW,
+                    h: targetH,
                 };
-                return { w, h, floorY, target };
+                return { w, h, floorY, target, s };
             }
 
             function getArmPoints(world) {
-                const base = { x: 120, y: world.floorY };
-                const l1 = 125;
-                const l2 = 96;
-                const wristExt = 20;
+                const s = world.s;
+                const base = { x: Math.round(120 * s), y: world.floorY };
+                const l1 = Math.round(125 * s);
+                const l2 = Math.round(96 * s);
+                const wristExt = Math.round(20 * s);
 
                 const elbow = {
                     x: base.x + Math.cos(state.baseAngle) * l1,
@@ -559,7 +571,8 @@
                     const dx = cx - arm.grip.x;
                     const dy = cy - arm.grip.y;
                     const dist = Math.hypot(dx, dy);
-                    if (dist < bestDist && dist < 34) {
+                    const grabRadius = Math.round(34 * world.s);
+                    if (dist < bestDist && dist < grabRadius) {
                         bestDist = dist;
                         best = i;
                     }
