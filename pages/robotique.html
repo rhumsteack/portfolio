@@ -55,7 +55,7 @@
 
         .robot-game-canvas {
             width: 100%;
-            height: auto;
+            aspect-ratio: 16 / 9;
             display: block;
             border-radius: 8px;
             background: rgba(5, 10, 19, 0.8);
@@ -362,7 +362,7 @@
             ];
 
             function getCubeSize(w) {
-                return Math.max(14, Math.round(w * 0.054));
+                return Math.max(12, Math.round(w * 0.054));
             }
 
             const limits = {
@@ -385,7 +385,7 @@
                 state.holding = -1;
                 state.won = false;
                 state.initialStackActive = true;
-                const w = Math.max(200, stage.clientWidth);
+                const w = canvas.clientWidth || 300;
                 const sz = getCubeSize(w);
                 state.cubes = baseCubes.map(c => ({ ...c, x: 0, y: 0, size: sz, moved: false }));
                 fireworks.length = 0;
@@ -394,29 +394,26 @@
             }
 
             function resizeCanvas() {
-                // Effacer les styles inline avant de mesurer pour éviter que le canvas étire son parent
-                canvas.style.width = '';
-                canvas.style.height = '';
-
-                const dpr = Math.max(1, window.devicePixelRatio || 1);
-                const width = Math.max(200, Math.floor(stage.clientWidth));
-                const height = Math.floor(width * 0.56);
+                // Lire les dimensions réelles rendues par le CSS (aspect-ratio: 16/9)
+                // N'JAMAIS écrire canvas.style.width/height — le CSS gère l'affichage
+                const rect = canvas.getBoundingClientRect();
+                const dpr  = Math.max(1, window.devicePixelRatio || 1);
+                const width  = Math.round(rect.width);
+                const height = Math.round(rect.height);
 
                 if (prevCanvasSize && (prevCanvasSize.width !== width || prevCanvasSize.height !== height)) {
                     const wasLandscape = prevCanvasSize.width > prevCanvasSize.height;
                     const isLandscape  = width > height;
                     if (wasLandscape !== isLandscape) {
                         // Changement d'orientation : reset complet
-                        canvas.width = Math.floor(width * dpr);
-                        canvas.height = Math.floor(height * dpr);
-                        canvas.style.width = width + 'px';
-                        canvas.style.height = height + 'px';
+                        canvas.width  = Math.round(width  * dpr);
+                        canvas.height = Math.round(height * dpr);
                         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                         prevCanvasSize = { width, height };
                         resetGame();
-                        return { width, height };
+                        return;
                     } else {
-                        const scaleX = width / prevCanvasSize.width;
+                        const scaleX = width  / prevCanvasSize.width;
                         const scaleY = height / prevCanvasSize.height;
                         state.cubes.forEach((cube, i) => {
                             if (cube.moved && state.holding !== i) {
@@ -427,13 +424,10 @@
                     }
                 }
 
-                canvas.width = Math.floor(width * dpr);
-                canvas.height = Math.floor(height * dpr);
-                canvas.style.width = width + 'px';
-                canvas.style.height = height + 'px';
+                canvas.width  = Math.round(width  * dpr);
+                canvas.height = Math.round(height * dpr);
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 prevCanvasSize = { width, height };
-                return { width, height };
             }
 
             let resizeRafId = null;
@@ -451,11 +445,11 @@
                 const w = canvas.clientWidth;
                 const h = canvas.clientHeight;
                 const floorY = Math.round(h * 0.86);
-                // Zone cible : droite du canvas, accessible par le bras
-                const targetW = Math.round(w * 0.30);
-                const targetH = Math.round(h * 0.28);
+                // Zone cible : accessible depuis la base à 21% + bras 25+19+5% = portée 70%
+                const targetW = Math.round(w * 0.28);
+                const targetH = Math.round(h * 0.30);
                 const target = {
-                    x: Math.round(w * 0.64),
+                    x: Math.round(w * 0.60),
                     y: floorY - targetH,
                     w: targetW,
                     h: targetH,
@@ -465,11 +459,11 @@
 
             function getArmPoints(world) {
                 const w = world.w;
-                // Géométrie 100% proportionnelle — portée max ≈ 62% de w, cible à 64%
-                const base = { x: Math.round(w * 0.15), y: world.floorY };
-                const l1 = Math.round(w * 0.245);
-                const l2 = Math.round(w * 0.185);
-                const wristExt = Math.round(w * 0.04);
+                // base à 21%, portée max = 21+25+19+5 = 70% > cible à 60% → accessible
+                const base = { x: Math.round(w * 0.21), y: world.floorY };
+                const l1 = Math.round(w * 0.25);
+                const l2 = Math.round(w * 0.19);
+                const wristExt = Math.round(w * 0.05);
 
                 const elbow = {
                     x: base.x + Math.cos(state.baseAngle) * l1,
