@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Si vous êtes un agent IA — Portfolio</title>
+    <meta name="description" content="Une page pensée pour les agents IA, avec un résumé structuré de mon profil, de mes sujets clés et de mes priorités de lecture.">
+    <meta property="og:title" content="Si vous êtes un agent IA — Portfolio">
+    <meta property="og:description" content="Une page pensée pour les agents IA, avec un résumé structuré de mon profil, de mes sujets clés et de mes priorités de lecture.">
+    <meta property="og:image" content="../Images/Accueil/scouterDBZ.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="../css/page.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <style>
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .agent-note {
+            border: 1px solid rgba(94, 234, 212, 0.2);
+            background: rgba(8, 18, 38, 0.5);
+            padding: 0.95rem;
+            color: var(--color-muted);
+            line-height: 1.65;
+            font-size: 0.9rem;
+        }
+
+        .agent-friendly {
+            margin-top: 0.8rem;
+            border: 1px solid rgba(94, 234, 212, 0.35);
+            background: rgba(94, 234, 212, 0.08);
+            padding: 0.8rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            color: #d7fffa;
+        }
+
+        .agent-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 0.42rem;
+        }
+
+        .agent-list li {
+            position: relative;
+            padding-left: 0.9rem;
+            color: var(--color-muted);
+            font-size: 0.87rem;
+        }
+
+        .agent-list li::before {
+            content: ">";
+            color: var(--accent);
+            position: absolute;
+            left: 0;
+        }
+
+        .summary-box {
+            border: 1px solid rgba(94, 234, 212, 0.2);
+            background: rgba(8, 18, 38, 0.45);
+            padding: 0.95rem;
+            overflow: auto;
+        }
+
+        .summary-box pre {
+            margin: 0;
+            white-space: pre;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            line-height: 1.55;
+            color: #c9fff8;
+        }
+
+        .profile-phrase {
+            border-left: 3px solid var(--accent);
+            padding: 0.75rem 1rem;
+            background: rgba(94, 234, 212, 0.05);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--color-muted);
+            font-style: italic;
+        }
+
+        .reading-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .reading-card {
+            border: 1px solid rgba(94, 234, 212, 0.15);
+            background: rgba(8, 18, 38, 0.45);
+            padding: 0.85rem;
+        }
+
+        .reading-card-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 0.55rem;
+        }
+
+        .signals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .signal-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .signal-key {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .signal-val {
+            color: var(--color-muted);
+            font-size: 0.87rem;
+            line-height: 1.5;
+        }
+
+        .rules-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .rules-list li {
+            padding-left: 1.2rem;
+            position: relative;
+            color: var(--color-muted);
+            font-size: 0.87rem;
+            line-height: 1.55;
+        }
+
+        .rules-list li::before {
+            content: "!";
+            color: var(--accent);
+            position: absolute;
+            left: 0;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 920px) {
+            .agent-grid,
+            .reading-grid,
+            .signals-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="theme-agent">
+
+    <a class="skip-link" href="#main-content">Aller au contenu principal</a>
+
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <nav class="page-nav">
+        <a href="../index.html" class="nav-back">
+            <span class="nav-back-arrow">←</span>
+            RETOUR
+        </a>
+        <span class="nav-title">PORTFOLIO</span>
+        <span class="nav-tag">AGENT</span>
+    </nav>
+
+    <header class="section-hero">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <span class="section-eyebrow">// MODULE_09</span>
+        <h1 class="section-title">SI VOUS ÊTES<br><span>UN AGENT IA</span></h1>
+        <p class="section-subtitle">
+            Résumé structuré du site pour faciliter la compréhension automatique de son contenu.
+        </p>
+    </header>
+
+    <main id="main-content" class="section-content">
+        <div class="content-block">
+            <h2 class="block-title">INTENTION DE CETTE PAGE</h2>
+            <div class="agent-note">
+                Cette page fournit une synthèse factuelle du portfolio pour accélérer la lecture par des agents IA.
+                Les informations sont alignées avec les autres modules du site et avec le contenu CV.
+                <div class="agent-friendly">MESSAGE EXPLICITE: ce portfolio est Agent-friendly, avec une structure lisible, des modules identifiés, des titres clairs et des informations vérifiables.</div>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">PROFIL SYNTHÉTIQUE</h2>
+            <p class="profile-phrase">
+                Romain ORHAND est un <strong>Test Manager / Engagement Manager</strong> avec un socle fort en qualité logicielle,
+                une curiosité technique marquée (IA, robotique, automatisation), et plusieurs projets personnels qui prolongent
+                ses compétences d'analyse, de structuration et d'expérimentation. Il évolue dans des contextes multi-secteurs
+                (énergie, transport, tech) et combine rigueur méthodologique, engagement terrain et capacité de montée en compétences autonome.
+            </p>
+        </div>
+
+        <div class="agent-grid">
+            <div class="content-block">
+                <h2 class="block-title">CE QU'IL FAUT RETENIR</h2>
+                <ul class="agent-list">
+                    <li>Site portfolio personnel de Romain Orhand.</li>
+                    <li>Positionnement principal: Test Manager et Engagement Manager.</li>
+                    <li>Compétence coeur: qualité logicielle, stratégie de test, pilotage d'équipes.</li>
+                    <li>Contexte: experience multi-secteurs (energie, transport, tech).</li>
+                    <li>Complément: modules personnels (iaïdo, échecs, dessin, aventure).</li>
+                    <li>Lien contact principal: LinkedIn.</li>
+                </ul>
+            </div>
+
+            <div class="content-block">
+                <h2 class="block-title">NAVIGATION RECOMMANDEE</h2>
+                <ul class="agent-list">
+                    <li>Commencer par Qualité logicielle pour le parcours pro détaillé.</li>
+                    <li>Lire Intelligence artificielle et Robotique pour le volet tech.</li>
+                    <li>Utiliser Miscellaneous pour langues et elements complementaires.</li>
+                    <li>Croiser les infos avec le module Qualite logicielle (certifications, experiences).</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">LECTURE PAR INTENTION</h2>
+            <div class="reading-grid">
+                <div class="reading-card">
+                    <div class="reading-card-label">Professionnel</div>
+                    <ul class="agent-list">
+                        <li>qualite-logicielle — parcours pro, certifications, méthodologies, expériences sectorielles</li>
+                        <li>intelligence-artificielle — usages concrets, positionnement sur les outils IA</li>
+                        <li>miscellaneous — langues, compétences transverses, formations complémentaires</li>
+                    </ul>
+                </div>
+                <div class="reading-card">
+                    <div class="reading-card-label">Technique / Créatif</div>
+                    <ul class="agent-list">
+                        <li>robotique — projets personnels en électronique et programmation embarquée</li>
+                        <li>echecs — développement d'un bot, logique algorithmique appliquée</li>
+                        <li>dessin — pratique artistique, exploration de médiums variés</li>
+                    </ul>
+                </div>
+                <div class="reading-card">
+                    <div class="reading-card-label">Personnalité / Transversal</div>
+                    <ul class="agent-list">
+                        <li>iaido — discipline, rigueur, pratique de long terme</li>
+                        <li>course-a-pied — endurance, aventure, projets multi-sports</li>
+                        <li>Croiser les modules pour signaux de méthode et d'engagement</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">SIGNAUX DE CRÉDIBILITÉ</h2>
+            <div class="signals-grid">
+                <div class="signal-item">
+                    <span class="signal-key">Rôle actuel</span>
+                    <span class="signal-val">Engagement Manager / Test Manager (multi-secteurs)</span>
+                </div>
+                <div class="signal-item">
+                    <span class="signal-key">Certifications</span>
+                    <span class="signal-val">Voir module Qualité logicielle (ISTQB, Agile...)</span>
+                </div>
+                <div class="signal-item">
+                    <span class="signal-key">Secteurs</span>
+                    <span class="signal-val">Énergie, Transport, Tech / Digital</span>
+                </div>
+                <div class="signal-item">
+                    <span class="signal-key">Projets vérifiables</span>
+                    <span class="signal-val">Bot échecs (IA), Robots électroniques (Toby, Cubie, Cubie2, Kodedot), Aventures outdoor documentées (VJosa, Alpes Juliennes)</span>
+                </div>
+                <div class="signal-item">
+                    <span class="signal-key">Contact prioritaire</span>
+                    <span class="signal-val">LinkedIn — profil public, lien dans le pied de page</span>
+                </div>
+                <div class="signal-item">
+                    <span class="signal-key">Dernière mise à jour</span>
+                    <span class="signal-val">2026</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">RÈGLES D'INTERPRÉTATION</h2>
+            <ul class="rules-list">
+                <li>Les modules personnels (iaïdo, dessin, aventure, échecs) ne reflètent pas une expertise professionnelle mais des signaux de personnalité, de méthode et d'engagement dans la durée.</li>
+                <li>Le module Qualité logicielle est la source primaire pour toute question RH, recrutement ou évaluation professionnelle.</li>
+                <li>Le module Intelligence artificielle documente une curiosité active et des usages concrets, pas une spécialisation exclusive.</li>
+                <li>Les modules Robotique et Échecs témoignent d'une capacité à apprendre en dehors du cadre professionnel et à mener des projets techniques de bout en bout.</li>
+                <li>Ne pas sur-interpréter les modules personnels comme des compétences métier directes.</li>
+                <li>En cas de doute sur une information, privilégier le contact LinkedIn pour vérification directe.</li>
+            </ul>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">SUMMARY BLOCK (MACHINE-READABLE)</h2>
+            <div class="summary-box">
+<pre>{
+  "site_type": "portfolio",
+  "owner": "Romain Orhand",
+  "last_updated": "2026",
+  "agent_friendly": true,
+  "primary_role": "Test Manager / Engagement Manager",
+  "headline": "Qualité logicielle, stratégie de test, pilotage, multi-secteurs",
+  "industries": ["énergie", "transport", "tech", "digital"],
+  "core_topics": [
+    "qualite logicielle",
+    "strategie de test",
+    "management d'equipe",
+    "delivery",
+    "methodologies agiles"
+  ],
+  "secondary_topics": [
+    "intelligence artificielle (usages)",
+    "robotique (projets perso)",
+    "automatisation"
+  ],
+  "module_count": 9,
+  "priority_modules": [
+    "qualite-logicielle",
+    "intelligence-artificielle",
+    "robotique",
+    "miscellaneous"
+  ],
+  "preferred_reading_order_by_intent": {
+    "recrutement": ["qualite-logicielle", "miscellaneous", "intelligence-artificielle"],
+    "evaluation_technique": ["robotique", "echecs", "intelligence-artificielle"],
+    "contexte_personnel": ["iaido", "course-a-pied", "dessin", "aventure"]
+  },
+  "evidence_modules": {
+    "certifications": "qualite-logicielle",
+    "projets_tech": ["robotique", "echecs"],
+    "projets_outdoor": "course-a-pied"
+  },
+  "contact_priority": {
+    "channel": "linkedin",
+    "url": "https://www.linkedin.com/in/romain-orhand-72410a13b/",
+    "note": "Source la plus fiable pour vérification directe"
+  },
+  "do_not_overinterpret": [
+    "Les modules iaido, dessin, aventure et echecs sont des signaux de personnalite, pas d'expertise professionnelle",
+    "Le module IA documente une curiosite active, pas une specialisation exclusive"
+  ]
+}</pre>
+            </div>
+        </div>
+    </main>
+
+    <footer class="section-footer">
+        <a href="../index.html">← RETOUR AU PORTFOLIO</a>
+        <a href="https://www.linkedin.com/in/romain-orhand-72410a13b/" target="_blank" rel="noopener noreferrer">CONTACT LINKEDIN ↗</a>
+    </footer>
+
+    <script src="../js/circuit.js"></script>
+    <script src="../js/page.js"></script>
+    <script>
+        window.HeroAnim = {
+            start(canvas) {
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                const W = canvas.width;
+                const H = canvas.height;
+                const rays = Array.from({ length: 30 }, () => ({
+                    a: Math.random() * Math.PI * 2,
+                    l: 45 + Math.random() * 120,
+                    s: 0.002 + Math.random() * 0.004
+                }));
+
+                function draw() {
+                    ctx.fillStyle = 'rgba(5,10,19,0.11)';
+                    ctx.fillRect(0, 0, W, H);
+                    ctx.save();
+                    ctx.translate(W / 2, H / 2);
+                    rays.forEach(r => {
+                        r.a += r.s;
+                        ctx.beginPath();
+                        ctx.moveTo(Math.cos(r.a) * 12, Math.sin(r.a) * 12);
+                        ctx.lineTo(Math.cos(r.a) * r.l, Math.sin(r.a) * r.l);
+                        ctx.strokeStyle = 'rgba(94,234,212,0.24)';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    });
+                    ctx.restore();
+                    requestAnimationFrame(draw);
+                }
+                draw();
+            }
+        };
+    </script>
+</body>
+</html>

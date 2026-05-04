@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligence Artificielle — Portfolio</title>
+    <meta name="description" content="Explorez mes travaux autour de l’IA : automatisation, notebooks interactifs, expérimentations et usages concrets.">
+    <meta property="og:title" content="Intelligence Artificielle — Portfolio">
+    <meta property="og:description" content="Explorez mes travaux autour de l’IA : automatisation, notebooks interactifs, expérimentations et usages concrets.">
+    <meta property="og:image" content="../Images/Accueil/scouterDBZ.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="../css/page.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <style>
+        /* ── Section expérimentations ── */
+        .xp-block { margin-top: 0; }
+
+        .xp-intro {
+            font-size: 0.9rem;
+            color: var(--color-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .xp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .xp-card {
+            background: rgba(255, 0, 128, 0.04);
+            border: 1px solid rgba(255, 0, 128, 0.18);
+            border-radius: 8px;
+            padding: 1.4rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .xp-card:hover {
+            border-color: rgba(255, 0, 128, 0.45);
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.1);
+        }
+
+        .xp-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .xp-tag {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            opacity: 0.75;
+            text-transform: uppercase;
+        }
+
+        .xp-link {
+            color: var(--color-muted);
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .xp-link:hover { color: var(--accent); }
+
+        .xp-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .xp-name {
+            font-family: var(--font-title);
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--color-bright);
+            margin: 0;
+        }
+
+        .xp-desc {
+            font-size: 0.85rem;
+            color: var(--color-muted);
+            line-height: 1.7;
+            flex: 1;
+        }
+
+        .xp-footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.25rem;
+        }
+
+        .xp-badge {
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            letter-spacing: 0.08em;
+            padding: 0.2rem 0.55rem;
+            border: 1px solid rgba(255, 0, 128, 0.25);
+            border-radius: 3px;
+            color: var(--color-muted);
+            background: rgba(255, 0, 128, 0.06);
+        }
+
+        /* Carte pleine largeur quand le notebook est ouvert */
+        .xp-card:has(details[open]) {
+            grid-column: 1 / -1;
+        }
+
+        .nb-accordion {
+            margin-top: 0.75rem;
+            border-top: 1px solid rgba(255, 0, 128, 0.12);
+            padding-top: 0.65rem;
+        }
+
+        .nb-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            cursor: pointer;
+            list-style: none;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            opacity: 0.8;
+            user-select: none;
+            transition: opacity 0.2s;
+        }
+
+        .nb-toggle::-webkit-details-marker { display: none; }
+
+        .nb-toggle:hover { opacity: 1; }
+
+        .nb-toggle-arrow {
+            width: 10px;
+            height: 10px;
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        details[open] .nb-toggle-arrow {
+            transform: rotate(90deg);
+        }
+
+        .nb-frame-wrap {
+            margin-top: 0.85rem;
+            border: 1px solid rgba(255, 0, 128, 0.18);
+            border-radius: 6px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .nb-actions {
+            margin-top: 0.75rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+        }
+
+        .nb-action {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.08em;
+            text-decoration: none;
+            text-transform: uppercase;
+            color: #ffd9f4;
+            border: 1px solid rgba(255, 0, 128, 0.35);
+            background: rgba(255, 0, 128, 0.1);
+            padding: 0.36rem 0.55rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nb-action:hover {
+            color: #ffffff;
+            border-color: rgba(255, 0, 128, 0.65);
+            box-shadow: 0 0 12px rgba(255, 0, 128, 0.2);
+        }
+
+        .nb-note {
+            margin-top: 0.55rem;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.04em;
+            color: var(--color-muted);
+            opacity: 0.82;
+            line-height: 1.55;
+        }
+
+        .nb-tuto {
+            margin-top: 0.75rem;
+            padding: 0.7rem 0.75rem;
+            border: 1px solid rgba(255, 0, 128, 0.22);
+            border-radius: 6px;
+            background: rgba(255, 0, 128, 0.05);
+        }
+
+        .nb-tuto-title {
+            margin: 0 0 0.35rem;
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #ffd9f4;
+        }
+
+        .nb-tuto-list {
+            margin: 0;
+            padding-left: 1rem;
+            color: var(--color-muted);
+            font-size: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .nb-tuto-list strong {
+            color: var(--color-bright);
+            font-weight: 600;
+        }
+
+        .nb-frame {
+            width: 100%;
+            height: 80vh;
+            border: none;
+            display: block;
+        }
+
+        .xp-card--highlight {
+            border-color: rgba(255, 180, 0, 0.35);
+            background: rgba(255, 160, 0, 0.04);
+        }
+
+        .xp-card--highlight:hover {
+            border-color: rgba(255, 180, 0, 0.65);
+            box-shadow: 0 0 20px rgba(255, 160, 0, 0.12);
+        }
+
+        .xp-award {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.08em;
+            color: #ffcc44;
+            white-space: nowrap;
+            opacity: 0.9;
+        }
+
+        .xp-meta {
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            letter-spacing: 0.08em;
+            color: var(--color-muted);
+            opacity: 0.72;
+            text-transform: uppercase;
+        }
+
+        .nafuda-demo {
+            margin-top: 0.45rem;
+            margin-bottom: 0.35rem;
+            padding: 0.9rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 0, 128, 0.18);
+            background:
+                radial-gradient(circle at 50% 15%, rgba(255, 42, 154, 0.14), transparent 58%),
+                linear-gradient(180deg, rgba(12, 22, 42, 0.9), rgba(5, 12, 24, 0.95));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nafuda-flip-scene {
+            width: 98px;
+            height: 160px;
+            perspective: 900px;
+        }
+
+        .nafuda-flip-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: nafudaFlip 6s ease-in-out infinite;
+        }
+
+        @keyframes nafudaFlip {
+            0%,
+            45% {
+                transform: rotateY(0deg);
+            }
+            50%,
+            95% {
+                transform: rotateY(180deg);
+            }
+            100% {
+                transform: rotateY(360deg);
+            }
+        }
+
+        .nafuda-plate {
+            width: 98px;
+            height: 160px;
+            position: absolute;
+            inset: 0;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 160, 220, 0.45);
+            background:
+                linear-gradient(180deg, rgba(255, 0, 128, 0.2), rgba(255, 0, 128, 0.04) 40%),
+                linear-gradient(160deg, rgba(18, 34, 68, 0.95), rgba(9, 18, 38, 0.94));
+            box-shadow:
+                inset 0 0 24px rgba(255, 95, 180, 0.14),
+                0 0 16px rgba(255, 0, 128, 0.22),
+                0 0 36px rgba(102, 223, 255, 0.12);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 0.45rem 0.5rem;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .nafuda-plate--back {
+            transform: rotateY(180deg);
+            border-color: rgba(116, 236, 255, 0.45);
+            background:
+                linear-gradient(180deg, rgba(72, 224, 255, 0.18), rgba(50, 180, 255, 0.04) 40%),
+                linear-gradient(160deg, rgba(15, 36, 74, 0.95), rgba(8, 22, 52, 0.94));
+            box-shadow:
+                inset 0 0 24px rgba(122, 237, 255, 0.12),
+                0 0 16px rgba(56, 210, 255, 0.22),
+                0 0 36px rgba(255, 96, 195, 0.12);
+        }
+
+        .nafuda-jp {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            font-family: "Noto Sans JP", "Yu Gothic UI", sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.14em;
+            color: #fff7ff;
+            text-shadow:
+                0 0 5px rgba(255, 158, 228, 0.82),
+                0 0 12px rgba(255, 77, 184, 0.76),
+                0 0 20px rgba(115, 227, 255, 0.42);
+        }
+
+        .nafuda-plate--back .nafuda-jp {
+            color: #e8fbff;
+            text-shadow:
+                0 0 5px rgba(145, 244, 255, 0.8),
+                0 0 12px rgba(88, 220, 255, 0.72),
+                0 0 20px rgba(255, 105, 210, 0.38);
+        }
+
+        .nafuda-en {
+            font-family: var(--font-mono);
+            font-size: 0.5rem;
+            letter-spacing: 0.08em;
+            color: #ffd9f5;
+            opacity: 0.9;
+            text-shadow: 0 0 8px rgba(255, 84, 191, 0.55);
+        }
+
+        @media (max-width: 600px) {
+            .nafuda-flip-scene,
+            .nafuda-plate {
+                width: 90px;
+                height: 146px;
+            }
+
+            .nafuda-jp {
+                font-size: 1.35rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .xp-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="theme-ia">
+
+    <a class="skip-link" href="#main-content">Aller au contenu principal</a>
+
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette"  aria-hidden="true"></div>
+
+    <!-- ── Navigation ── -->
+    <nav class="page-nav">
+        <a href="../index.html" class="nav-back">
+            <span class="nav-back-arrow">←</span>
+            RETOUR
+        </a>
+        <span class="nav-title">PORTFOLIO</span>
+        <span class="nav-tag">TECHNOLOGIE</span>
+    </nav>
+
+    <!-- ── Hero ── -->
+    <header class="section-hero">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <span class="section-eyebrow">// MODULE_02</span>
+        <h1 class="section-title">INTELLIGENCE<span>ARTIFICIELLE</span></h1>
+        <p class="section-subtitle">
+            Exploration des systèmes intelligents — apprentissage, optimisation et innovation.
+        </p>
+    </header>
+
+    <!-- ── Contenu ── -->
+    <main id="main-content" class="section-content">
+
+        <div class="content-grid">
+            <div class="content-block">
+                <h2 class="block-title">INTÉRÊT</h2>
+                <p>
+                    Impossible de passer à côté de l'IA aujourd'hui. Il s'agit d'un outil tellement puissant qu'il ouvre le champ des possibles. Forcément ça m'intéresse : que peut-on faire avec ? Comment ça marche ? Quels sont les impacts ? J'aime explorer ces questions à travers des projets concrets, pour comprendre les capacités et les limites de ces technologies.
+                </p>
+            </div>
+
+            <div class="content-block">
+                <h2 class="block-title">DOMAINES</h2>
+                <ul class="tech-list">
+                    <li>Agents IA et automatisation</li>
+                    <li>Tests de modèles et qualité logicielle</li>
+                    <li>Computer Vision</li>
+                    <li>Analyse de risque et priorisation</li>
+                    <li>Prototypage assisté par IA</li>
+                </ul>
+            </div>
+
+            <div class="content-block">
+                <h2 class="block-title">OUTILS</h2>
+                <ul class="tech-list">
+                    <li>GitHub Copilot, VS Code et BMAD method</li>
+                    <li>Python, Jupyter Notebook, MyBinder et Colab</li>
+                    <li>Chaînes CI/CD, Supabase, Fly.io et intégration d'outils IA</li>
+                </ul>
+            </div>
+
+            <div class="content-block">
+                <h2 class="block-title">RÉFLEXIONS</h2>
+                <p>
+                    Les expérimentations présentées ici me servent surtout à tester ce que l'IA apporte concrètement : accélérer la réalisation d'un produit, mieux cibler les tests, ou rendre un prototype plus vite exploitable. L'important c'est d'essayer pour s'approprier l'outil et même à travers les suggestions de l'IA découvrir d'autres outils ou technologies.
+                </p>
+            </div>
+        </div>
+
+        <!-- ── Expérimentations ── -->
+        <div class="content-block xp-block">
+            <h2 class="block-title">EXPÉRIMENTATIONS</h2>
+            <p class="xp-intro">
+                Projets concrets réalisés pour explorer, apprendre et démontrer — pas de théorie sans pratique.
+            </p>
+
+            <div class="xp-grid">
+
+                <!-- Projet : Portfolio IA -->
+                <div class="xp-card">
+                    <div class="xp-card-header">
+                        <span class="xp-tag">GitHub Copilot · VS Code</span>
+                        <a href="https://github.com/rhumsteack/Portfolio" target="_blank" rel="noopener" class="xp-link" aria-label="Voir le dépôt">
+                            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.65 7.65 0 012 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                        </a>
+                    </div>
+                    <h3 class="xp-name">Ce portfolio</h3>
+                    <p class="xp-desc">
+                        Conçu intégralement avec GitHub Copilot en mode agent. Une exploration concrète du pair-programming IA : de la mise en page à la génération de scripts PowerShell, en passant par les animations CSS.
+                    </p>
+                    <div class="xp-footer">
+                        <span class="xp-badge">HTML / CSS / JS</span>
+                        <span class="xp-badge">PowerShell</span>
+                    </div>
+                </div>
+
+                <!-- Projet : Tests métamorphiques -->
+                <div class="xp-card">
+                    <div class="xp-card-header">
+                        <span class="xp-tag">Jupyter Notebook · Python</span>
+                        <a href="https://github.com/rhumsteack/tests-metamorphiques" target="_blank" rel="noopener" class="xp-link" aria-label="Voir le dépôt">
+                            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.65 7.65 0 012 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                        </a>
+                    </div>
+                    <h3 class="xp-name">Tests métamorphiques</h3>
+                    <p class="xp-desc">
+                        Notebook pédagogique expliquant le concept de test métamorphique par l'exemple : validation d'un modèle de reconnaissance d'image en exploitant les relations entre entrées transformées et sorties attendues.
+                    </p>
+                    <div class="xp-footer">
+                        <span class="xp-badge">Python</span>
+                        <span class="xp-badge">ML Testing</span>
+                        <span class="xp-badge">Computer Vision</span>
+                    </div>
+                    <details class="nb-accordion">
+                        <summary class="nb-toggle">
+                            <svg class="nb-toggle-arrow" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M3 2l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Voir le notebook
+                        </summary>
+                        <div class="nb-actions">
+                            <a class="nb-action" href="https://mybinder.org/v2/gh/rhumsteack/tests-metamorphiques/main?urlpath=lab/tree/notebooks/metamorphic_testing_playground.ipynb" target="_blank" rel="noopener">Lancer sur MyBinder</a>
+                            <a class="nb-action" href="https://colab.research.google.com/github/rhumsteack/tests-metamorphiques/blob/main/notebooks/metamorphic_testing_playground.ipynb" target="_blank" rel="noopener">Ouvrir dans Colab</a>
+                        </div>
+                        <div class="nb-tuto" aria-label="Tutoriel rapide MyBinder">
+                            <p class="nb-tuto-title">Tutoriel rapide (MyBinder)</p>
+                            <ol class="nb-tuto-list">
+                                <li>Cliquer sur <strong>Lancer sur MyBinder</strong> et attendre l'ouverture complète de JupyterLab.</li>
+                                <li>Dans JupyterLab, menu <strong>Exécuter &gt; Exécuter toutes les cellules</strong> (ou <strong>Run &gt; Run All Cells</strong>) pour lancer le notebook complet.</li>
+                            </ol>
+                        </div>
+                        <p class="nb-note">Si MyBinder affiche <strong>ModuleNotFoundError: matplotlib</strong>, exécuter dans une cellule : <code>%pip install -q matplotlib</code> puis redémarrer le kernel.</p>
+                        <div class="nb-frame-wrap">
+                            <iframe
+                                class="nb-frame"
+                                src="https://nbviewer.org/github/rhumsteack/tests-metamorphiques/blob/main/notebooks/metamorphic_testing_playground.ipynb"
+                                title="Notebook — Tests métamorphiques"
+                                loading="lazy"
+                                sandbox="allow-scripts allow-same-origin"
+                            ></iframe>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Projet : Agent de priorisation des tests -->
+                <div class="xp-card xp-card--highlight">
+                    <div class="xp-card-header">
+                        <span class="xp-tag">Agent IA · Analyse de risque</span>
+                        <span class="xp-award" title="2e place — Hackathon agents de test">🥈 Hackathon</span>
+                    </div>
+                    <h3 class="xp-name">Agent de priorisation des tests</h3>
+                    <p class="xp-desc">
+                        Agent intelligent de priorisation des cas de test par analyse de risque produit. Conçu lors d'un hackathon dédié aux agents de test — classé 2e sur l'ensemble des participants.
+                    </p>
+                    <div class="xp-footer">
+                        <span class="xp-badge">Agent IA</span>
+                        <span class="xp-badge">Risk Analysis</span>
+                        <span class="xp-badge">Test Automation</span>
+                    </div>
+                </div>
+
+                <!-- Projet : Virtual Nafuda Kake -->
+                <div class="xp-card">
+                    <div class="xp-card-header">
+                        <span class="xp-tag">Agent IA · Produit interne</span>
+                        <span class="xp-meta">Projet privé</span>
+                    </div>
+                    <h3 class="xp-name">Virtual Nafuda Kake</h3>
+                    <p class="xp-desc">
+                        Tableau traditionnel de dojo repensé en application pour faire l'appel et suivre les présences aux entraînements du club. Avec l'IA, j'ai aussi codé la chaîne CI/CD pour déployer automatiquement les nouvelles versions.
+                    </p>
+                    <div class="nafuda-demo" aria-label="Illustration d'un nafuda néon animé">
+                        <div class="nafuda-flip-scene" role="img" aria-label="Nafuda animé recto verso avec le nom japonais オラン et la signature Romain ORHAND">
+                            <div class="nafuda-flip-inner">
+                                <div class="nafuda-plate nafuda-plate--front">
+                                    <span class="nafuda-jp">オラン</span>
+                                    <span class="nafuda-en">Romain ORHAND</span>
+                                </div>
+                                <div class="nafuda-plate nafuda-plate--back">
+                                    <span class="nafuda-jp">オラン</span>
+                                    <span class="nafuda-en">Romain ORHAND</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="xp-footer">
+                        <span class="xp-badge">Attendance Tracking</span>
+                        <span class="xp-badge">CI/CD Automation</span>
+                        <span class="xp-badge">Mobile Compatible</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/circuit.js"></script>
+    <script src="../js/page.js"></script>
+</body>
+</html>

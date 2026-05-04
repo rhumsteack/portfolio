@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robotique — Portfolio</title>
+    <meta name="description" content="Plongez dans mes projets robotiques personnels, entre prototypes, interaction et expérimentation ludique.">
+    <meta property="og:title" content="Robotique — Portfolio">
+    <meta property="og:description" content="Plongez dans mes projets robotiques personnels, entre prototypes, interaction et expérimentation ludique.">
+    <meta property="og:image" content="../Images/Robotique/Toby.avif">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="../css/page.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <style>
+        .project-name-with-icon {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+
+        .project-inline-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(86, 243, 255, 0.35);
+        }
+
+        .project-name-text {
+            line-height: 1.2;
+        }
+
+        .robot-game-wrap {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .robot-game-hint {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            color: var(--color-muted);
+        }
+
+        .robot-game-stage {
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            background: linear-gradient(180deg, rgba(11, 22, 43, 0.85), rgba(6, 14, 29, 0.9));
+            box-shadow: inset 0 0 30px rgba(168, 85, 247, 0.08);
+            border-radius: 10px;
+            padding: 0.65rem;
+        }
+
+        .robot-game-canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            background: rgba(5, 10, 19, 0.8);
+        }
+
+        .robot-game-panel {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(120px, 1fr));
+            gap: 0.55rem;
+        }
+
+        .robot-game-btn {
+            appearance: none;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            background: rgba(9, 18, 36, 0.9);
+            color: #d4c2ff;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            padding: 0.55rem 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .robot-game-btn:hover {
+            border-color: rgba(168, 85, 247, 0.75);
+            color: #f4ecff;
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.3);
+        }
+
+        .robot-game-btn[data-action="grab-drop"],
+        .robot-game-btn[data-action="reset"] {
+            border-color: rgba(86, 243, 255, 0.45);
+            color: #a9fbff;
+        }
+
+        .robot-game-status {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--color-text);
+        }
+
+        .robot-game-status strong {
+            color: #8ff2ff;
+            font-weight: 400;
+        }
+
+        @media (max-width: 768px) {
+            .robot-game-panel {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+<body class="theme-robotique">
+
+    <a class="skip-link" href="#main-content">Aller au contenu principal</a>
+
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette"  aria-hidden="true"></div>
+
+    <!-- ── Navigation ── -->
+    <nav class="page-nav">
+        <a href="../index.html" class="nav-back">
+            <span class="nav-back-arrow">←</span>
+            RETOUR
+        </a>
+        <span class="nav-title">PORTFOLIO</span>
+        <span class="nav-tag">TECHNOLOGIE</span>
+    </nav>
+
+    <!-- ── Hero ── -->
+    <header class="section-hero">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <span class="section-eyebrow">// MODULE_03</span>
+        <h1 class="section-title">ROBO<span>TIQUE</span></h1>
+        <p class="section-subtitle">
+            Conception, automatisation et intelligence embarquée — faire vivre la machine.
+        </p>
+    </header>
+
+    <!-- ── Contenu ── -->
+    <main id="main-content" class="section-content">
+
+        <div class="content-grid">
+            <div class="content-block">
+                <h2 class="block-title">PASSION</h2>
+                <div class="block-body">
+                    <p>
+                        La robotique me fascine par l'imaginaire qu'elle véhicule et par la concrétisation qu'elle permet. C'est un domaine où l'on peut vraiment faire vivre une idée, en lui donnant une forme physique et une présence dans le monde réel.
+                    </p>
+                    <p>
+                        La plupart de mes projets sont surtout orientés vers la compréhension et l'expérimentation de systèmes robotiques personnels. Du hacking au sens premier, c'est à dire du bidouillage pour mieux comprendre les choses.
+                    </p>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2 class="block-title">DOMAINES EXPLORÉS</h2>
+                <div class="tags-wrap">
+                    <span class="pill">Robotique mobile</span>
+                    <span class="pill">Desktop companion</span>
+                    <span class="pill">Gadgets interactifs</span>
+                    <span class="pill">Prototypage rapide</span>
+                    <span class="pill">Capteurs</span>
+                    <span class="pill">Automatisation</span>
+                    <span class="pill">Sécurité offensive (Kode Dot)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">PROJETS</h2>
+            <div class="block-body">
+                <ul class="block-list">
+                    <li>
+                        <span class="project-name-with-icon">
+                            <img class="project-inline-icon" src="../Images/Robotique/peppy-icon-v3b.png" alt="" aria-hidden="true" width="32" height="32"/>
+                            <span class="project-name-text">Peppy l'orang-outan</span>
+                        </span>
+                        - mon premier robot, un orang-outan à énergie solaire
+                    </li>
+                    <li>
+                        <span class="project-name-with-icon">
+                            <img class="project-inline-icon" src="../Images/Robotique/toby-icon-v3b.png" alt="" aria-hidden="true" width="32" height="32"/>
+                            <span class="project-name-text">Toby : KT2 Kung-Fu Turtle</span>
+                        </span>
+                        - robot/gadget orienté interaction et expérimentation.
+                    </li>
+                    <li>
+                        <span class="project-name-with-icon">
+                            <img class="project-inline-icon" src="../Images/Robotique/cubie-icon-v3b.png" alt="" aria-hidden="true" width="32" height="32"/>
+                            <span class="project-name-text">Cubie : Desktop Companion</span>
+                        </span>
+                        - compagnon de bureau pensé pour l'usage quotidien.
+                    </li>
+                    <li>
+                        <span class="project-name-with-icon">
+                            <img class="project-inline-icon" src="../Images/Robotique/kodedot-icon-v3b.png" alt="" aria-hidden="true" width="32" height="32"/>
+                            <span class="project-name-text">Kode Dot : Ethical Hacking</span>
+                        </span>
+                        - projet mêlant hardware, software et sensibilisation sécurité.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-block">
+                <h2 class="block-title">STACK TECHNIQUE</h2>
+                <ul class="block-list">
+                    <li>Base technique : électronique embarquée + code applicatif + interface simple pour interagir</li>
+                    <li>Peppy : focus sur l'autonomie, la sobriété énergétique, pas de logique embarquée</li>
+                    <li>Toby : logique d'états, réactions rapides et interactions fun avec l'utilisateur</li>
+                    <li>Cubie : compagnon de bureau, événements contextuels et usage pratique tous les jours</li>
+                    <li>Kode Dot : approche orientée sécurité, durcissement et bonnes pratiques d'accès</li>
+                </ul>
+            </div>
+
+            <div class="content-block">
+                <h2 class="block-title">MINI JEU : BRAS ROBOTIQUE</h2>
+                <div class="robot-game-wrap">
+                    <p class="robot-game-hint">
+                        Objectif : déplacer les 3 cubes dans la zone cible a droite. Oriente le bras, ferme la pince pour saisir et ouvre la pince pour deposer.
+                    </p>
+
+                    <div class="robot-game-stage">
+                        <canvas id="robot-game-canvas" class="robot-game-canvas" aria-label="Mini jeu bras robotique" role="img"></canvas>
+                    </div>
+
+                    <div class="robot-game-panel" aria-label="Panneau de commandes du bras robotique">
+                        <button class="robot-game-btn" data-action="base-left" type="button">BASE - [Q/A/←]</button>
+                        <button class="robot-game-btn" data-action="base-right" type="button">BASE + [D/→]</button>
+                        <button class="robot-game-btn" data-action="elbow-left" type="button">COUDE - [Z/W/↑]</button>
+                        <button class="robot-game-btn" data-action="elbow-right" type="button">COUDE + [S/↓]</button>
+                        <button class="robot-game-btn" data-action="claw-open" type="button">PINCE OUVRIR [E/O]</button>
+                        <button class="robot-game-btn" data-action="claw-close" type="button">PINCE FERMER [X/C]</button>
+                        <button class="robot-game-btn" data-action="reset" type="button">RESET [R]</button>
+                    </div>
+
+                    <div class="robot-game-status" aria-live="polite">
+                        <span>Cubes places : <strong id="robot-game-placed">0/3</strong></span>
+                        <span>Etat pince : <strong id="robot-game-claw">OUVERTE</strong></span>
+                        <span id="robot-game-message"><strong>En cours...</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="section-footer">
+        <a href="../index.html">← RETOUR AU PORTFOLIO</a>
+        <a href="https://www.linkedin.com/in/romain-orhand-72410a13b/" target="_blank" rel="noopener noreferrer">CONTACT LINKEDIN ↗</a>
+    </footer>
+
+    <script src="../js/circuit.js"></script>
+    <script src="../js/page.js"></script>
+    <script>
+        /* Mini-animation canvas hero : grille hexagonale pulsante */
+        window.HeroAnim = {
+            start(canvas) {
+                const ctx = canvas.getContext('2d');
+                canvas.width  = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                const W = canvas.width;
+                const H = canvas.height;
+
+                const SIZE   = 32;
+                const HEX_W  = SIZE * 2;
+                const HEX_H  = Math.sqrt(3) * SIZE;
+                let   t      = 0;
+
+                const hexes = [];
+                const cols  = Math.ceil(W / (HEX_W * 0.75)) + 2;
+                const rows  = Math.ceil(H / HEX_H) + 2;
+
+                for (let r = -1; r < rows; r++) {
+                    for (let c = -1; c < cols; c++) {
+                        hexes.push({
+                            x: c * HEX_W * 0.75,
+                            y: r * HEX_H + (c % 2 === 0 ? 0 : HEX_H / 2),
+                            phase: Math.random() * Math.PI * 2,
+                        });
+                    }
+                }
+
+                function drawHex(x, y, size, alpha) {
+                    ctx.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                        const a  = (Math.PI / 3) * i - Math.PI / 6;
+                        const hx = x + size * Math.cos(a);
+                        const hy = y + size * Math.sin(a);
+                        i === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy);
+                    }
+                    ctx.closePath();
+                    ctx.strokeStyle = `rgba(168,85,247,${alpha})`;
+                    ctx.lineWidth   = 0.8;
+                    ctx.stroke();
+                }
+
+                function draw() {
+                    ctx.fillStyle = 'rgba(5,10,19,0.12)';
+                    ctx.fillRect(0, 0, W, H);
+
+                    hexes.forEach(h => {
+                        const pulse = (Math.sin(t * 1.5 + h.phase) + 1) / 2;
+                        drawHex(h.x, h.y, SIZE * 0.88, 0.04 + pulse * 0.2);
+                    });
+
+                    t += 0.018;
+                    requestAnimationFrame(draw);
+                }
+                draw();
+            }
+        };
+
+        (function initRobotArmGame() {
+            const canvas = document.getElementById('robot-game-canvas');
+            if (!canvas) return;
+
+            const placedEl = document.getElementById('robot-game-placed');
+            const clawEl = document.getElementById('robot-game-claw');
+            const messageEl = document.getElementById('robot-game-message');
+            const controls = Array.from(document.querySelectorAll('.robot-game-btn'));
+            const stage = canvas.parentElement;
+            const ctx = canvas.getContext('2d');
+            const fireworks = [];
+
+            let celebrationTicks = 0;
+            let frameTick = 0;
+
+            const state = {
+                baseAngle: -0.7,
+                elbowAngle: 1.35,
+                clawOpen: 0.72,
+                holding: -1,
+                cubes: [],
+                won: false,
+                initialStackActive: true,
+            };
+
+            const baseCubes = [
+                { x: 16, y: 0, size: 30, color: '#ff6fa2' },
+                { x: 16, y: 0, size: 30, color: '#7fd7ff' },
+                { x: 16, y: 0, size: 30, color: '#a4ff9f' },
+            ];
+
+            const limits = {
+                baseMin: -2.7,
+                baseMax: 0.25,
+                elbowMin: -3.2,
+                elbowMax: 3.2,
+                clawMin: 0.2,
+                clawMax: 1.0,
+            };
+
+            function clamp(v, min, max) {
+                return Math.max(min, Math.min(max, v));
+            }
+
+            function resetGame() {
+                state.baseAngle = -0.7;
+                state.elbowAngle = 1.35;
+                state.clawOpen = 0.72;
+                state.holding = -1;
+                state.won = false;
+                state.initialStackActive = true;
+                state.cubes = baseCubes.map(c => ({ ...c, moved: false }));
+                fireworks.length = 0;
+                celebrationTicks = 0;
+                messageEl.innerHTML = '<strong>En cours...</strong>';
+            }
+
+            function resizeCanvas() {
+                const dpr = Math.max(1, window.devicePixelRatio || 1);
+                const width = Math.max(360, Math.floor(stage.clientWidth));
+                const height = Math.floor(width * 0.56);
+                canvas.width = Math.floor(width * dpr);
+                canvas.height = Math.floor(height * dpr);
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                return { width, height };
+            }
+
+            function getWorld() {
+                const w = canvas.clientWidth;
+                const h = canvas.clientHeight;
+                const floorY = h - 42;
+                const target = {
+                    x: w - 185,
+                    y: floorY - 92,
+                    w: 150,
+                    h: 88,
+                };
+                return { w, h, floorY, target };
+            }
+
+            function getArmPoints(world) {
+                const base = { x: 120, y: world.floorY };
+                const l1 = 125;
+                const l2 = 96;
+                const wristExt = 20;
+
+                const elbow = {
+                    x: base.x + Math.cos(state.baseAngle) * l1,
+                    y: base.y + Math.sin(state.baseAngle) * l1,
+                };
+                const fore = state.baseAngle + state.elbowAngle;
+                const wrist = {
+                    x: elbow.x + Math.cos(fore) * l2,
+                    y: elbow.y + Math.sin(fore) * l2,
+                };
+                const grip = {
+                    x: wrist.x + Math.cos(fore) * wristExt,
+                    y: wrist.y + Math.sin(fore) * wristExt,
+                };
+                return { base, elbow, wrist, grip, fore };
+            }
+
+            function placeInitialStack(world) {
+                state.cubes.forEach((cube, i) => {
+                    if (state.holding === i) return;
+                    if (state.initialStackActive) {
+                        cube.x = 16;
+                        cube.y = world.floorY - cube.size * (i + 1);
+                    } else if (!cube.moved) {
+                        cube.x = 16 + i * 38;
+                        cube.y = world.floorY - cube.size;
+                        cube.moved = true;
+                    }
+                });
+            }
+
+            function updateHeldCube(world, arm) {
+                if (state.holding < 0) return;
+                const cube = state.cubes[state.holding];
+                cube.moved = true;
+                cube.x = clamp(arm.grip.x - cube.size / 2, 14, world.w - cube.size - 14);
+                cube.y = clamp(arm.grip.y - cube.size / 2, 14, world.floorY - cube.size);
+            }
+
+            function getOverlap(a, b) {
+                const left = Math.max(a.x, b.x);
+                const right = Math.min(a.x + a.size, b.x + b.size);
+                return Math.max(0, right - left);
+            }
+
+            function settleDroppedCube(index, world) {
+                const cube = state.cubes[index];
+                cube.x = clamp(cube.x, 14, world.w - cube.size - 14);
+                cube.y = clamp(cube.y, 14, world.floorY - cube.size);
+
+                let supportTargetY = Infinity;
+                let sideCandidate = null;
+
+                state.cubes.forEach((other, i) => {
+                    if (i === index) return;
+
+                    const overlap = getOverlap(cube, other);
+                    if (other.y >= cube.y && overlap >= cube.size / 2) {
+                        const targetY = other.y - cube.size;
+                        if (targetY < supportTargetY) {
+                            supportTargetY = targetY;
+                        }
+                    }
+
+                    if (other.y >= cube.y && overlap > 0) {
+                        if (!sideCandidate || overlap > sideCandidate.overlap) {
+                            sideCandidate = { cube: other, overlap };
+                        }
+                    }
+                });
+
+                if (supportTargetY !== Infinity) {
+                    cube.y = clamp(supportTargetY, 14, world.floorY - cube.size);
+                    return;
+                }
+
+                if (sideCandidate) {
+                    const other = sideCandidate.cube;
+                    const cubeCenter = cube.x + cube.size / 2;
+                    const otherCenter = other.x + other.size / 2;
+                    if (cubeCenter < otherCenter) {
+                        cube.x = other.x - cube.size;
+                    } else {
+                        cube.x = other.x + other.size;
+                    }
+                    cube.x = clamp(cube.x, 14, world.w - cube.size - 14);
+                }
+
+                cube.y = world.floorY - cube.size;
+            }
+
+            function dropHeldCube(world) {
+                if (state.holding < 0) return;
+                const idx = state.holding;
+                state.holding = -1;
+                settleDroppedCube(idx, world);
+                messageEl.innerHTML = '<strong>Cube depose.</strong>';
+            }
+
+            function tryGrabCube(world, arm) {
+                if (state.holding >= 0) return;
+
+                if (state.clawOpen > 0.48) return;
+
+                let best = -1;
+                let bestDist = Infinity;
+                state.cubes.forEach((cube, i) => {
+                    const cx = cube.x + cube.size / 2;
+                    const cy = cube.y + cube.size / 2;
+                    const dx = cx - arm.grip.x;
+                    const dy = cy - arm.grip.y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < bestDist && dist < 34) {
+                        bestDist = dist;
+                        best = i;
+                    }
+                });
+
+                if (best >= 0) {
+                    state.initialStackActive = false;
+                    state.holding = best;
+                    messageEl.innerHTML = '<strong>Cube saisi.</strong>';
+                } else {
+                    messageEl.innerHTML = '<strong>Aucun cube a portee.</strong>';
+                }
+            }
+
+            function countPlaced(world) {
+                return state.cubes.reduce((acc, cube) => {
+                    const cx = cube.x + cube.size / 2;
+                    const cy = cube.y + cube.size / 2;
+                    const inTarget = cx > world.target.x + 8 && cx < world.target.x + world.target.w - 8 && cy > world.target.y + 8 && cy < world.target.y + world.target.h - 8;
+                    return acc + (inTarget ? 1 : 0);
+                }, 0);
+            }
+
+            function drawGrid(world) {
+                ctx.fillStyle = '#091326';
+                ctx.fillRect(0, 0, world.w, world.h);
+
+                ctx.strokeStyle = 'rgba(80,120,200,0.14)';
+                ctx.lineWidth = 1;
+                for (let x = 0; x < world.w; x += 24) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, world.h);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < world.h; y += 24) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(world.w, y);
+                    ctx.stroke();
+                }
+
+                ctx.fillStyle = 'rgba(13, 26, 45, 0.9)';
+                ctx.fillRect(0, world.floorY, world.w, world.h - world.floorY);
+
+                ctx.fillStyle = 'rgba(56, 228, 255, 0.12)';
+                ctx.fillRect(world.target.x, world.target.y, world.target.w, world.target.h);
+                ctx.strokeStyle = 'rgba(56, 228, 255, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(world.target.x, world.target.y, world.target.w, world.target.h);
+                ctx.fillStyle = 'rgba(180, 249, 255, 0.9)';
+                ctx.font = '11px JetBrains Mono';
+                ctx.fillText('ZONE CIBLE', world.target.x + 12, world.target.y + 18);
+            }
+
+            function drawCubes() {
+                state.cubes.forEach(cube => {
+                    ctx.fillStyle = cube.color;
+                    ctx.fillRect(cube.x, cube.y, cube.size, cube.size);
+                    ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+                    ctx.lineWidth = 1.5;
+                    ctx.strokeRect(cube.x + 0.5, cube.y + 0.5, cube.size - 1, cube.size - 1);
+                });
+            }
+
+            function drawArm(world, arm) {
+                const jointGlow = 'rgba(168,85,247,0.45)';
+
+                ctx.strokeStyle = 'rgba(215, 172, 255, 0.95)';
+                ctx.lineWidth = 11;
+                ctx.lineCap = 'round';
+
+                ctx.beginPath();
+                ctx.moveTo(arm.base.x, arm.base.y);
+                ctx.lineTo(arm.elbow.x, arm.elbow.y);
+                ctx.lineTo(arm.wrist.x, arm.wrist.y);
+                ctx.stroke();
+
+                ctx.fillStyle = '#221139';
+                ctx.beginPath();
+                ctx.arc(arm.base.x, arm.base.y, 14, 0, Math.PI * 2);
+                ctx.arc(arm.elbow.x, arm.elbow.y, 11, 0, Math.PI * 2);
+                ctx.arc(arm.wrist.x, arm.wrist.y, 9, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = jointGlow;
+                ctx.beginPath();
+                ctx.arc(arm.base.x, arm.base.y, 5, 0, Math.PI * 2);
+                ctx.arc(arm.elbow.x, arm.elbow.y, 4, 0, Math.PI * 2);
+                ctx.arc(arm.wrist.x, arm.wrist.y, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                const open = 8 + state.clawOpen * 12;
+                const nx = -Math.sin(arm.fore);
+                const ny = Math.cos(arm.fore);
+
+                const p1x = arm.grip.x + nx * open;
+                const p1y = arm.grip.y + ny * open;
+                const p2x = arm.grip.x - nx * open;
+                const p2y = arm.grip.y - ny * open;
+
+                const f1x = p1x + Math.cos(arm.fore) * 18;
+                const f1y = p1y + Math.sin(arm.fore) * 18;
+                const f2x = p2x + Math.cos(arm.fore) * 18;
+                const f2y = p2y + Math.sin(arm.fore) * 18;
+
+                ctx.strokeStyle = '#9bf6ff';
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(p1x, p1y);
+                ctx.lineTo(f1x, f1y);
+                ctx.moveTo(p2x, p2y);
+                ctx.lineTo(f2x, f2y);
+                ctx.stroke();
+            }
+
+            function spawnBurst(x, y, count = 24) {
+                const palette = ['#9bf6ff', '#ff6fa2', '#a4ff9f', '#ffd166', '#d0a9ff'];
+                for (let i = 0; i < count; i++) {
+                    const a = (Math.PI * 2 * i) / count + Math.random() * 0.2;
+                    const speed = 1.2 + Math.random() * 2.2;
+                    fireworks.push({
+                        x,
+                        y,
+                        vx: Math.cos(a) * speed,
+                        vy: Math.sin(a) * speed,
+                        life: 32 + Math.floor(Math.random() * 16),
+                        maxLife: 48,
+                        size: 1.8 + Math.random() * 1.8,
+                        color: palette[i % palette.length],
+                    });
+                }
+            }
+
+            function triggerCelebration(world) {
+                const cx = world.target.x + world.target.w / 2;
+                const cy = world.target.y + world.target.h / 2;
+                spawnBurst(cx - 24, cy - 16, 22);
+                spawnBurst(cx + 16, cy - 28, 24);
+                spawnBurst(cx, cy - 6, 26);
+                celebrationTicks = 105;
+            }
+
+            function updateAndDrawFireworks() {
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    const p = fireworks[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.05;
+                    p.vx *= 0.995;
+                    p.life -= 1;
+
+                    if (p.life <= 0) {
+                        fireworks.splice(i, 1);
+                        continue;
+                    }
+
+                    const alpha = Math.max(0, p.life / p.maxLife);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = alpha;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            function render() {
+                frameTick += 1;
+                const world = getWorld();
+                const arm = getArmPoints(world);
+
+                placeInitialStack(world);
+                updateHeldCube(world, arm);
+
+                drawGrid(world);
+                drawCubes();
+                drawArm(world, arm);
+                updateAndDrawFireworks();
+
+                const placed = countPlaced(world);
+                placedEl.textContent = placed + '/3';
+                clawEl.textContent = state.clawOpen < 0.45 ? 'FERMEE' : 'OUVERTE';
+
+                if (placed === 3 && !state.won) {
+                    state.won = true;
+                    messageEl.innerHTML = '<strong>Bravo, mission accomplie.</strong>';
+                    triggerCelebration(world);
+                } else if (!state.won && state.holding < 0) {
+                    messageEl.innerHTML = '<strong>En cours...</strong>';
+                }
+
+                if (state.won && celebrationTicks > 0) {
+                    celebrationTicks -= 1;
+                    if (celebrationTicks % 20 === 0) {
+                        const rx = world.target.x + 20 + Math.random() * (world.target.w - 40);
+                        const ry = world.target.y - 8 - Math.random() * 30;
+                        spawnBurst(rx, ry, 14 + Math.floor(Math.random() * 8));
+                    }
+                }
+
+                requestAnimationFrame(render);
+            }
+
+            const actions = {
+                'base-left': () => { state.baseAngle = clamp(state.baseAngle - 0.14, limits.baseMin, limits.baseMax); },
+                'base-right': () => { state.baseAngle = clamp(state.baseAngle + 0.14, limits.baseMin, limits.baseMax); },
+                'elbow-left': () => { state.elbowAngle = clamp(state.elbowAngle - 0.14, limits.elbowMin, limits.elbowMax); },
+                'elbow-right': () => { state.elbowAngle = clamp(state.elbowAngle + 0.14, limits.elbowMin, limits.elbowMax); },
+                'claw-open': () => {
+                    if (state.holding >= 0) {
+                        dropHeldCube(getWorld());
+                    }
+                    state.clawOpen = clamp(state.clawOpen + 0.16, limits.clawMin, limits.clawMax);
+                },
+                'claw-close': () => {
+                    state.clawOpen = clamp(state.clawOpen - 0.16, limits.clawMin, limits.clawMax);
+                    if (state.holding < 0 && state.clawOpen <= 0.48) {
+                        const world = getWorld();
+                        const arm = getArmPoints(world);
+                        tryGrabCube(world, arm);
+                    }
+                },
+                'reset': () => { resetGame(); },
+            };
+
+            controls.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const action = btn.dataset.action;
+                    if (actions[action]) actions[action]();
+                });
+            });
+
+            window.addEventListener('keydown', e => {
+                const key = e.key.toLowerCase();
+                let handled = true;
+
+                if (key === 'q' || key === 'a' || e.key === 'ArrowLeft') actions['base-left']();
+                else if (key === 'd' || e.key === 'ArrowRight') actions['base-right']();
+                else if (key === 'z' || key === 'w' || e.key === 'ArrowUp') actions['elbow-left']();
+                else if (key === 's' || e.key === 'ArrowDown') actions['elbow-right']();
+                else if (key === 'e' || key === 'o') actions['claw-open']();
+                else if (key === 'x' || key === 'c') actions['claw-close']();
+                else if (key === 'r') actions['reset']();
+                else handled = false;
+
+                if (handled) {
+                    e.preventDefault();
+                }
+            });
+
+            resetGame();
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            render();
+        })();
+    </script>
+</body>
+</html>

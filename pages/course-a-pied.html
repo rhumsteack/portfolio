@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aventure — Portfolio</title>
+    <meta name="description" content="Retrouvez mes aventures trail et packraft à travers cartes interactives, traces GPX et retours d’expérience en course à pied.">
+    <meta property="og:title" content="Aventure — Portfolio">
+    <meta property="og:description" content="Retrouvez mes aventures trail et packraft à travers cartes interactives, traces GPX et retours d’expérience en course à pied.">
+    <meta property="og:image" content="../Images/Accueil/scouterDBZ.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="../vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="../css/page.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <style>
+        .adventure-explorer {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .adventure-explorer-head {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .adventure-explorer-kicker {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            letter-spacing: 0.18em;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .adventure-explorer-text {
+            margin: 0;
+            color: var(--color-text);
+            max-width: 70ch;
+        }
+
+        .adventure-layout {
+            display: grid;
+            gap: 1.25rem;
+        }
+
+        .adventure-list {
+            display: flex;
+            gap: 0.85rem;
+            overflow-x: auto;
+            padding-bottom: 0.3rem;
+        }
+
+        .adventure-choice {
+            flex: 1 1 0;
+            min-width: 210px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(160deg, rgba(0, 255, 136, 0.08), rgba(6, 11, 18, 0.92));
+            color: var(--color-text-bright);
+            text-align: left;
+            border-radius: 16px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+        }
+
+        .adventure-choice:hover,
+        .adventure-choice:focus-visible {
+            transform: translateY(-2px);
+            border-color: var(--accent-glow);
+            box-shadow: 0 16px 30px rgba(0, 0, 0, 0.25);
+            outline: none;
+        }
+
+        .adventure-choice.is-active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent-dim), 0 18px 36px rgba(0, 255, 136, 0.12);
+        }
+
+        .adventure-choice-title {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.35rem;
+        }
+
+        .adventure-choice-meta {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.73rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.55rem;
+        }
+
+        .adventure-choice-desc {
+            display: block;
+            font-size: 0.92rem;
+            line-height: 1.55;
+            color: var(--color-text);
+        }
+
+        .adventure-stage {
+            display: grid;
+            grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.85fr);
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .adventure-visuals {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .adventure-panel {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(0, 255, 136, 0.08), rgba(6, 10, 18, 0.94));
+            padding: 1.25rem;
+            display: grid;
+            gap: 1.1rem;
+        }
+
+        .adventure-panel-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: start;
+            flex-wrap: wrap;
+        }
+
+        .adventure-panel-head h3 {
+            margin: 0;
+            font-size: 1.35rem;
+        }
+
+        .adventure-panel-head p {
+            margin: 0.5rem 0 0;
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .adventure-source {
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            color: var(--color-text);
+            white-space: normal;
+        }
+
+        .adventure-source a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid var(--accent-dim);
+            padding-bottom: 2px;
+        }
+
+        .utmb-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 255, 136, 0.55);
+            background: linear-gradient(180deg, rgba(0, 255, 136, 0.28), rgba(0, 255, 136, 0.16));
+            color: #d9ffef;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            text-decoration: none;
+            box-shadow: 0 8px 20px rgba(0, 255, 136, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease, border-color 160ms ease;
+        }
+
+        .utmb-cta:hover,
+        .utmb-cta:focus-visible {
+            transform: translateY(-1px);
+            border-color: rgba(0, 255, 136, 0.85);
+            background: linear-gradient(180deg, rgba(0, 255, 136, 0.36), rgba(0, 255, 136, 0.2));
+            box-shadow: 0 12px 24px rgba(0, 255, 136, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+            outline: none;
+        }
+
+        .utmb-cta:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 14px rgba(0, 255, 136, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+        }
+
+        .adventure-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+        }
+
+        .adventure-metric {
+            min-width: 120px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 0.75rem 0.9rem;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .adventure-metric-label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-text);
+            margin-bottom: 0.35rem;
+        }
+
+        .adventure-metric-value {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-text-bright);
+        }
+
+        .adventure-map {
+            width: 100%;
+            min-height: 420px;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.18);
+        }
+
+        .leaflet-container {
+            font-family: var(--font-body);
+            background: #091019;
+        }
+
+        .adventure-city-label {
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .adventure-city-label span {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.03em;
+            color: #eaf5ff;
+            background: rgba(8, 14, 24, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 999px;
+            padding: 0.2rem 0.52rem;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.34);
+        }
+
+        .adventure-city-point-ring {
+            filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.55));
+        }
+
+        .adventure-context-city-label {
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .adventure-context-city-label span {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.03em;
+            color: rgba(200, 220, 240, 0.7);
+            background: rgba(8, 14, 24, 0.55);
+            border-radius: 999px;
+            padding: 0.15rem 0.4rem;
+        }
+
+        .adventure-profile {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1rem;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .adventure-profile-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .adventure-profile-head h4,
+        .adventure-profile-head p {
+            margin: 0;
+        }
+
+        .adventure-profile-note {
+            font-size: 0.86rem;
+            color: var(--color-text);
+        }
+
+        .adventure-profile-plot {
+            width: 100%;
+        }
+
+        .adventure-profile-plot svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .adventure-empty {
+            border: 1px dashed rgba(255, 255, 255, 0.16);
+            border-radius: 14px;
+            padding: 1rem;
+            color: var(--color-text);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        @media (max-width: 980px) {
+            .adventure-stage {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .adventure-panel,
+            .adventure-profile {
+                padding: 1rem;
+            }
+
+            .adventure-map {
+                min-height: 340px;
+            }
+        }
+    </style>
+</head>
+<body class="theme-aventure">
+
+    <a class="skip-link" href="#main-content">Aller au contenu principal</a>
+
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette"  aria-hidden="true"></div>
+
+    <!-- ── Navigation ── -->
+    <nav class="page-nav">
+        <a href="../index.html" class="nav-back">
+            <span class="nav-back-arrow">←</span>
+            RETOUR
+        </a>
+        <span class="nav-title">PORTFOLIO</span>
+        <span class="nav-tag">OUTDOOR</span>
+    </nav>
+
+    <!-- ── Hero ── -->
+    <header class="section-hero">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <span class="section-eyebrow">// MODULE_04</span>
+        <h1 class="section-title">AVEN<span>TURE</span></h1>
+        <p class="section-subtitle">
+            Trail, packraft et rando : l'aventure comme terrain d'apprentissage, d'humilité et d'énergie durable.
+        </p>
+    </header>
+
+    <!-- ── Contenu ── -->
+    <main id="main-content" class="section-content">
+
+        <div class="content-grid">
+            <div class="content-block">
+                <h2 class="block-title">MON PARCOURS</h2>
+                <div class="block-body">
+                    <p>
+                        L'aventure c'est sortir de sa zone de confort. Cela peut prendre bien des formes mais ici je regroupe les aventures sportives en lien avec un voyage. Découvrir le monde et se découvrir face à l'adversité d'une épreuve physique, face à la nature sauvage ou face à l'imprévu.
+                    </p>
+                    <p>
+                        Des formats urbains aux aventures nature, ces expériences nourrissent
+                        l'imaginaire avant le départ, le plaisir (et parfois la résilience) pendant l'aventure et les souvenirs à l'arrivée.
+                    </p>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2 class="block-title">REPÈRES</h2>
+                <ul class="block-list">
+                    <li>Pratiques : trail, packraft, randonnée</li>
+                    <li>Approche : se poser un objectif et ensuite établir un plan pour se donner les moyens de l'atteindre</li>
+                    <li>La discipline permet une régularité de l'entraînement qui fait des miracles sur ce que l'on peut faire, chacun à son niveau</li>
+                </ul>
+                <div style="margin-top: 0.9rem; display: flex; justify-content: center;">
+                    <a href="https://utmb.world/fr/runner/5683694.romain.orhand" target="_blank" rel="noopener noreferrer" class="utmb-cta" aria-label="Ouvrir mon profil UTMB dans un nouvel onglet">
+                        Profil UTMB
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">AVENTURES MARQUANTES</h2>
+            <div class="adventure-explorer">
+                <div class="adventure-layout">
+                    <div id="adventure-list" class="adventure-list" role="tablist" aria-label="Sélection d'une aventure"></div>
+
+                    <div class="adventure-stage">
+                        <div class="adventure-visuals">
+                            <div id="adventure-map" class="adventure-map" aria-label="Carte interactive de l'aventure"></div>
+
+                            <div class="adventure-profile">
+                                <div class="adventure-profile-head">
+                                    <div>
+                                        <h4>Profil altimétrique</h4>
+                                        <p id="adventure-profile-note" class="adventure-profile-note">Lecture en cours…</p>
+                                    </div>
+                                </div>
+                                <div id="adventure-profile-plot" class="adventure-profile-plot"></div>
+                            </div>
+                        </div>
+
+                        <div class="adventure-panel">
+                            <div class="adventure-panel-head">
+                                <div>
+                                    <h3 id="adventure-title">Chargement…</h3>
+                                    <p id="adventure-summary"></p>
+                                </div>
+                                <div id="adventure-source" class="adventure-source"></div>
+                            </div>
+
+                            <div id="adventure-metrics" class="adventure-metrics"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-block">
+                <h2 class="block-title">DISCIPLINES</h2>
+                <div class="tags-wrap">
+                    <span class="pill">Route</span>
+                    <span class="pill">Trail</span>
+                    <span class="pill">Packraft</span>
+                    <span class="pill">Randonnée</span>
+                    <span class="pill">Aventure itinérante</span>
+                    <span class="pill">Montagne</span>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2 class="block-title">PHILOSOPHIE DE PRATIQUE</h2>
+                <ul class="block-list">
+                    <li>Sortir de sa zone de confort pour se découvrir soi-même</li>
+                    <li>La régularité permet des miracles dont on ne se sait pas capable</li>
+                    <li>Où est notre limite ? Et comment s'adapter pour la repousser ?</li>
+                    <li>L'activité physique pour améliorer le bien-être et la santé</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="section-footer">
+        <a href="../index.html">← RETOUR AU PORTFOLIO</a>
+        <a href="https://www.linkedin.com/in/romain-orhand-72410a13b/" target="_blank" rel="noopener noreferrer">CONTACT LINKEDIN ↗</a>
+    </footer>
+
+    <script src="../js/circuit.js"></script>
+    <script src="../js/page.js"></script>
+    <script src="../vendor/leaflet/leaflet.js"></script>
+    <script src="../data/adventures/saintelyon.data.js"></script>
+    <script src="../data/adventures/europe-borders.data.js"></script>
+    <script src="../data/adventures/julian-alps-gpx.data.js"></script>
+    <script src="../data/adventures/vjosa-geo.data.js"></script>
+    <script src="../data/adventures/vjosa-profile.data.js"></script>
+    <script>
+        /* Mini-animation canvas hero : ligne ECG animée */
+        window.HeroAnim = {
+            start(canvas) {
+                const ctx = canvas.getContext('2d');
+                canvas.width  = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                const W = canvas.width;
+                const H = canvas.height;
+
+                const pattern = [
+                    [0, 0], [0.05, 0], [0.1, -0.05], [0.13, 0.5],
+                    [0.15, -0.7], [0.18, 2.8], [0.21, -1.3],
+                    [0.25, 0], [0.3, 0.2], [0.4, 0.15], [0.5, 0],
+                    [0.55, 0], [0.6, -0.05], [0.63, 0.5],
+                    [0.65, -0.7], [0.68, 2.8], [0.71, -1.3],
+                    [0.75, 0], [0.8, 0.2], [0.9, 0.15], [1.0, 0],
+                ];
+
+                function ecgY(t) {
+                    const frac = t % 1;
+                    for (let i = 0; i < pattern.length - 1; i++) {
+                        const [t0, v0] = pattern[i];
+                        const [t1, v1] = pattern[i + 1];
+                        if (frac >= t0 && frac <= t1) {
+                            return v0 + ((frac - t0) / (t1 - t0)) * (v1 - v0);
+                        }
+                    }
+                    return 0;
+                }
+
+                let offset = 0;
+                function draw() {
+                    ctx.fillStyle = 'rgba(5,10,19,0.15)';
+                    ctx.fillRect(0, 0, W, H);
+
+                    for (let l = 0; l < 4; l++) {
+                        const cy    = H * (0.3 + l * 0.15);
+                        const amp   = H * (0.06 - l * 0.01);
+                        const alpha = (1 - l * 0.22) * 0.55;
+
+                        ctx.beginPath();
+                        for (let x = 0; x < W; x++) {
+                            const t = (x / W + offset) % 1;
+                            const y = cy + ecgY(t) * amp;
+                            x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                        }
+                        ctx.strokeStyle = `rgba(0,255,136,${alpha})`;
+                        ctx.lineWidth   = Math.max(0.5, 2 - l * 0.4);
+                        ctx.shadowBlur  = 10;
+                        ctx.shadowColor = '#00ff88';
+                        ctx.stroke();
+                        ctx.shadowBlur  = 0;
+                    }
+
+                    offset += 0.003;
+                    requestAnimationFrame(draw);
+                }
+                draw();
+            }
+        };
+
+        const INLINE_ADVENTURE_DATA = window.__ADVENTURE_DATA__ || {};
+        const IS_FILE_PROTOCOL = window.location.protocol === 'file:';
+        const COUNTRY_BORDER_COLOR = '#ff8f3f';
+        const EUROPE_BORDER_RINGS = Array.isArray(INLINE_ADVENTURE_DATA?.europeBorders?.rings)
+            ? INLINE_ADVENTURE_DATA.europeBorders.rings
+            : [];
+
+        async function loadJsonData(url, inlineKey) {
+            if (IS_FILE_PROTOCOL) {
+                if (INLINE_ADVENTURE_DATA[inlineKey]) {
+                    return INLINE_ADVENTURE_DATA[inlineKey];
+                }
+                throw new Error(`Donnée locale manquante: ${inlineKey}`);
+            }
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Impossible de charger ${url}`);
+            }
+            return response.json();
+        }
+
+        async function loadTextData(url, inlineKey) {
+            if (IS_FILE_PROTOCOL) {
+                const inlineValue = INLINE_ADVENTURE_DATA[inlineKey];
+                if (typeof inlineValue === 'string') {
+                    return inlineValue;
+                }
+                if (inlineValue && typeof inlineValue.value === 'string') {
+                    return inlineValue.value;
+                }
+                throw new Error(`Donnée locale manquante: ${inlineKey}`);
+            }
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Impossible de charger ${url}`);
+            }
+            return response.text();
+        }
+
+        const ADVENTURES = [
+            {
+                id: 'saintelyon',
+                title: 'SaintéLyon 2025',
+                meta: '79,2 km · nuit · trail',
+                summary: "Une course de légende, la SaintéLyon reste une expérience de gestion du froid, du rythme et de l'attention sur une nuit d'effort. Une préparation athlétique longue et difficile m'a permis de vivre ce moment sans trop souffrir, même si sur un effort aussi long il y a nécessairement des hauts et des bas. La gestion de ces bas a été primordiale.",
+                sourceLabel: 'Trace OpenRunner 2025 (route 22808680)',
+                sourceUrl: 'https://www.openrunner.com/route-details/22808680',
+                color: '#00ff88',
+                cityLabels: [
+                    { name: 'Saint-Étienne', lat: 45.4397, lng: 4.3872, dx: 12, dy: -8 },
+                    { name: 'Saint-Christo-en-Jarez', lat: 45.5455, lng: 4.4871, dx: 12, dy: -8 },
+                    { name: 'Sainte-Catherine', lat: 45.6038, lng: 4.5702, dx: 12, dy: -8 },
+                    { name: 'Saint-Genou', lat: 45.6333, lng: 4.6396, dx: 12, dy: -8 },
+                    { name: 'Soucieu-en-Jarrest', lat: 45.6787, lng: 4.7023, dx: 12, dy: -8 },
+                    { name: 'Chaponost', lat: 45.7107, lng: 4.7469, dx: 12, dy: -8 },
+                    { name: 'Lyon', lat: 45.7640, lng: 4.8357, dx: 12, dy: -8 }
+                ],
+                load: () => loadJsonData('../data/adventures/openrunner-22808680.json', 'saintelyon').then(parseSaintelyon)
+            },
+            {
+                id: 'julian-alps',
+                title: 'Julian Alps Sky Trail 2024',
+                meta: 'Sky Trail 50K · Slovénie · montagne',
+                summary: "Mon premier trail de montagne, intégré à un voyage à travers l'Italie et la Slovénie. De Lyon à Milan en bus avec ma femme, puis en solo (et en train) jusqu'à Trieste (ma ville coup de coeur du voyage) avant de retrouver mon frère à Ljubljana. Ensuite la découverte de la Slovénie essentiellement en bus et en covoiturage avec au milieu un trail de 54km que j'ai plutôt bien encaissé, me permettant de continuer d'apprécier la suite de mon épopée passant par Bled et un peu plus tard sur le chemin du retour de Venise. ",
+                sourceLabel: 'GPX officiel UTMB Sky Trail 50K',
+                sourceUrl: 'https://julianalps.utmb.world/races/50K',
+                color: '#69f0ae',
+                cityLabels: [
+                    { name: 'Žirovnica', lat: 46.4040, lng: 14.1490, dx: 12, dy: -8 },
+                    { name: 'Kranjska Gora', lat: 46.4850, lng: 13.7870, dx: 12, dy: -8 }
+                ],
+                contextCities: [
+                    { name: 'Lyon', lat: 45.7640, lng: 4.8357, dx: 10, dy: -6 },
+                    { name: 'Milan', lat: 45.4654, lng: 9.1859, dx: 10, dy: -6 },
+                    { name: 'Venise', lat: 45.4408, lng: 12.3155, dx: 10, dy: -6 },
+                    { name: 'Trieste', lat: 45.6495, lng: 13.7768, dx: 10, dy: -6 },
+                    { name: 'Ljubljana', lat: 46.0569, lng: 14.5058, dx: 10, dy: -6 },
+                    { name: 'Bled', lat: 46.3683, lng: 14.1146, dx: 10, dy: -6 }
+                ],
+                travelRoute: [
+                    [45.7640, 4.8357],
+                    [45.4654, 9.1859],
+                    [45.6495, 13.7768],
+                    [46.0569, 14.5058],
+                    [46.4850, 13.7870],
+                    [46.3683, 14.1146],
+                    [46.0569, 14.5058],
+                    [45.6495, 13.7768],
+                    [45.4408, 12.3155],
+                    [45.7640, 4.8357]
+                ],
+                load: () => loadTextData('../data/adventures/julian-alps.gpx', 'julianAlpsGpx').then(parseGpx)
+            },
+            {
+                id: 'vjosa',
+                title: 'Descente de la Vjosa',
+                meta: 'Packraft · Albanie · itinérance',
+                summary: "Pour cette aventure hors format course, la carte montre le fil complet de la Vjosa.",
+                sourceLabel: 'Géométrie OpenStreetMap / Nominatim',
+                sourceUrl: 'https://nominatim.openstreetmap.org/',
+                color: '#7af5ff',
+                cityLabels: [
+                    { name: 'Konitsa', lat: 40.0470, lng: 20.7490, dx: 12, dy: -8 },
+                    { name: 'Permet', lat: 40.2330, lng: 20.3510, dx: 12, dy: -8 },
+                    { name: 'Tepelene', lat: 40.2960, lng: 20.0190, dx: 12, dy: -8 },
+                    { name: 'Memaliaj', lat: 40.3510, lng: 19.9810, dx: 12, dy: -8 },
+                    { name: 'Fier', lat: 40.7230, lng: 19.5560, dx: 12, dy: -8 },
+                    { name: 'Narta', lat: 40.4760, lng: 19.4860, dx: 12, dy: -8 }
+                ],
+                load: async () => {
+                    const [geojson, localProfile] = await Promise.all([
+                        loadJsonData('../data/adventures/vjosa.geojson', 'vjosaGeojson'),
+                        loadJsonData('../data/adventures/vjosa-profile.json', 'vjosaProfile').catch(() => ({ points: {} }))
+                    ]);
+                    return parseVjosa(geojson, localProfile);
+                }
+            }
+        ];
+
+        let adventureMap;
+        let adventureLayer;
+        let adventureTravelLayer;
+        let adventureCityLayer;
+        let adventureCountryLayer;
+        let cachedEuropeBorderLayer;
+        const adventureCache = new Map();
+
+        function initAdventureMap() {
+            adventureMap = L.map('adventure-map', {
+                zoomControl: true,
+                scrollWheelZoom: false
+            }).setView([45.76, 4.84], 6);
+
+            if (!IS_FILE_PROTOCOL) {
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 18,
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(adventureMap);
+                return;
+            }
+
+            L.rectangle([
+                [-85, -180],
+                [85, 180]
+            ], {
+                stroke: false,
+                fillColor: '#0b1220',
+                fillOpacity: 0.92
+            }).addTo(adventureMap);
+        }
+
+        function decodePolyline2D(encoded, factor = 1e5) {
+            const points = [];
+            let index = 0;
+            let lat = 0;
+            let lng = 0;
+
+            while (index < encoded.length) {
+                let shift = 0;
+                let result = 0;
+                let byte;
+                do {
+                    byte = encoded.charCodeAt(index) - 63;
+                    index += 1;
+                    result |= (byte & 0x1f) << shift;
+                    shift += 5;
+                } while (byte >= 0x20);
+                lat += (result & 1) ? ~(result >> 1) : (result >> 1);
+
+                shift = 0;
+                result = 0;
+                do {
+                    byte = encoded.charCodeAt(index) - 63;
+                    index += 1;
+                    result |= (byte & 0x1f) << shift;
+                    shift += 5;
+                } while (byte >= 0x20);
+                lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+
+                points.push({
+                    lat: lat / factor,
+                    lng: lng / factor
+                });
+            }
+
+            return points;
+        }
+
+        function decodePolyline1D(encoded) {
+            const values = [];
+            let index = 0;
+            let current = 0;
+
+            while (index < encoded.length) {
+                let shift = 0;
+                let result = 0;
+                let byte;
+                do {
+                    byte = encoded.charCodeAt(index) - 63;
+                    index += 1;
+                    result |= (byte & 0x1f) << shift;
+                    shift += 5;
+                } while (byte >= 0x20);
+
+                current += (result & 1) ? ~(result >> 1) : (result >> 1);
+                values.push(current);
+            }
+
+            return values;
+        }
+
+        function lambert93ToWgs84(x, y) {
+            const n = 0.725607765053267;
+            const c = 11754255.426096;
+            const xs = 700000;
+            const ys = 12655612.049876;
+            const eccentricity = 0.081819191042816;
+            const lonMeridian = 3 * Math.PI / 180;
+            const r = Math.hypot(x - xs, y - ys);
+            const gamma = Math.atan((x - xs) / (ys - y));
+            const lonRad = lonMeridian + gamma / n;
+            const latIso = -Math.log(Math.abs(r / c)) / n;
+
+            let latRad = 2 * Math.atan(Math.exp(latIso)) - Math.PI / 2;
+            for (let index = 0; index < 6; index += 1) {
+                latRad = 2 * Math.atan(Math.pow((1 + eccentricity * Math.sin(latRad)) / (1 - eccentricity * Math.sin(latRad)), eccentricity / 2) * Math.exp(latIso)) - Math.PI / 2;
+            }
+
+            return {
+                lat: latRad * 180 / Math.PI,
+                lng: lonRad * 180 / Math.PI
+            };
+        }
+
+        function haversineDistance(first, second) {
+            const earthRadiusKm = 6371;
+            const toRad = (value) => value * Math.PI / 180;
+            const dLat = toRad(second.lat - first.lat);
+            const dLng = toRad(second.lng - first.lng);
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(first.lat)) * Math.cos(toRad(second.lat)) * Math.sin(dLng / 2) ** 2;
+            return 2 * earthRadiusKm * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        function buildDistanceProfileFromCoords(coords) {
+            let distanceKm = 0;
+            return coords.map((coord, index) => {
+                if (index > 0) {
+                    distanceKm += haversineDistance(coords[index - 1], coord);
+                }
+                return {
+                    distanceKm,
+                    elevationM: coord.elevation ?? null
+                };
+            });
+        }
+
+        function normalizeProfile(points) {
+            return points
+                .filter((point) => Number.isFinite(point.distanceKm) && Number.isFinite(point.elevationM))
+                .sort((left, right) => left.distanceKm - right.distanceKm);
+        }
+
+        function parseSaintelyon(data) {
+            if (data?.shape?.full_encoded) {
+                const coords = decodePolyline2D(data.shape.full_encoded);
+                const elevationSeries = typeof data?.elevation?.full_encoded === 'string'
+                    ? decodePolyline1D(data.elevation.full_encoded)
+                    : [];
+                const intervalMeters = Number(data?.elevation?.interval) || 100;
+                const profile = normalizeProfile(elevationSeries.map((elevationM, index) => ({
+                    distanceKm: (index * intervalMeters) / 1000,
+                    elevationM
+                })));
+
+                return {
+                    coords,
+                    profile,
+                    metricsOverride: {
+                        distanceKm: Number(data.length) / 1000,
+                        positive: Number(data?.elevation?.ascent),
+                        negative: Number(data?.elevation?.descent),
+                        startElevation: profile[0]?.elevationM ?? null,
+                        endElevation: profile.at(-1)?.elevationM ?? null
+                    },
+                    profileNote: 'Profil altimétrique et trace OpenRunner 2025.'
+                };
+            }
+
+            const coords = data.points.map((point) => {
+                const converted = lambert93ToWgs84(point.lat, point.lon);
+                return {
+                    lat: converted.lat,
+                    lng: converted.lng,
+                    elevation: Number(point.y ?? point.y0)
+                };
+            });
+
+            const profile = normalizeProfile(data.points.map((point, index) => ({
+                distanceKm: Number(point.x ?? index),
+                elevationM: Number(point.y ?? point.y0)
+            })));
+
+            return { coords, profile };
+        }
+
+        function parseGpx(gpxText) {
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(gpxText, 'application/xml');
+            const trackPoints = Array.from(xml.getElementsByTagNameNS('*', 'trkpt'));
+            const coords = [];
+            const profile = [];
+            let distanceKm = 0;
+
+            trackPoints.forEach((trackPoint, index) => {
+                const lat = Number(trackPoint.getAttribute('lat'));
+                const lng = Number(trackPoint.getAttribute('lon'));
+                const eleNode = trackPoint.getElementsByTagNameNS('*', 'ele')[0];
+                const ele = eleNode ? Number(eleNode.textContent) : null;
+                const coord = { lat, lng, elevation: ele };
+
+                if (index > 0) {
+                    distanceKm += haversineDistance(coords[index - 1], coord);
+                }
+
+                coords.push(coord);
+                if (Number.isFinite(ele)) {
+                    profile.push({ distanceKm, elevationM: ele });
+                }
+            });
+
+            return { coords, profile };
+        }
+
+        function parseVjosa(geojson, localProfile) {
+            const coords = geojson.coordinates.flat().map(([lng, lat]) => ({ lat, lng }));
+            const localPoints = Array.isArray(localProfile?.points)
+                ? localProfile.points
+                : Object.values(localProfile?.points ?? {});
+            const profile = normalizeProfile(localPoints.map((point) => ({
+                distanceKm: Number(point.distanceKm ?? point.x),
+                elevationM: Number(point.elevationM ?? point.y ?? point.ele)
+            })));
+
+            return { coords, profile };
+        }
+
+        function formatDistance(distanceKm) {
+            return `${distanceKm.toFixed(1).replace('.', ',')} km`;
+        }
+
+        function formatElevation(elevationM) {
+            return `${Math.round(elevationM).toLocaleString('fr-FR')} m`;
+        }
+
+        function calculateMetrics(coords, profile, metricsOverride = null) {
+            const distanceKm = profile.length > 1
+                ? profile[profile.length - 1].distanceKm
+                : buildDistanceProfileFromCoords(coords).at(-1)?.distanceKm ?? 0;
+
+            let positive = 0;
+            let negative = 0;
+            for (let index = 1; index < profile.length; index += 1) {
+                const delta = profile[index].elevationM - profile[index - 1].elevationM;
+                if (delta > 0) {
+                    positive += delta;
+                } else if (delta < 0) {
+                    negative += Math.abs(delta);
+                }
+            }
+
+            const startElevation = profile[0]?.elevationM ?? coords[0]?.elevation ?? null;
+            const endElevation = profile.at(-1)?.elevationM ?? coords.at(-1)?.elevation ?? null;
+
+            const computed = {
+                distanceKm,
+                positive,
+                negative,
+                startElevation,
+                endElevation
+            };
+
+            if (!metricsOverride) {
+                return computed;
+            }
+
+            return {
+                distanceKm: Number.isFinite(metricsOverride.distanceKm) ? metricsOverride.distanceKm : computed.distanceKm,
+                positive: Number.isFinite(metricsOverride.positive) ? metricsOverride.positive : computed.positive,
+                negative: Number.isFinite(metricsOverride.negative) ? metricsOverride.negative : computed.negative,
+                startElevation: Number.isFinite(metricsOverride.startElevation) ? metricsOverride.startElevation : computed.startElevation,
+                endElevation: Number.isFinite(metricsOverride.endElevation) ? metricsOverride.endElevation : computed.endElevation
+            };
+        }
+
+        function createMetric(label, value) {
+            return `<div class="adventure-metric"><span class="adventure-metric-label">${label}</span><span class="adventure-metric-value">${value}</span></div>`;
+        }
+
+        function getEuropeBorderLayer() {
+            if (!IS_FILE_PROTOCOL || EUROPE_BORDER_RINGS.length === 0) {
+                return null;
+            }
+
+            if (cachedEuropeBorderLayer) {
+                return cachedEuropeBorderLayer;
+            }
+
+            const borders = EUROPE_BORDER_RINGS
+                .filter((ring) => Array.isArray(ring) && ring.length > 2)
+                .map((ring) => L.polyline(ring, {
+                    color: COUNTRY_BORDER_COLOR,
+                    weight: 1.35,
+                    opacity: 0.72,
+                    dashArray: '4 5',
+                    lineJoin: 'round'
+                }));
+
+            if (borders.length === 0) {
+                return null;
+            }
+
+            cachedEuropeBorderLayer = L.layerGroup(borders);
+            return cachedEuropeBorderLayer;
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        }
+
+        function findNearestCoordinateIndex(coords, targetLat, targetLng) {
+            if (!Array.isArray(coords) || coords.length === 0) {
+                return -1;
+            }
+
+            let nearestIndex = 0;
+            let nearestDistance = Infinity;
+            const targetLatRad = (targetLat * Math.PI) / 180;
+            const cosLat = Math.cos(targetLatRad);
+
+            for (let index = 0; index < coords.length; index += 1) {
+                const coord = coords[index];
+                const dLat = coord.lat - targetLat;
+                const dLng = (coord.lng - targetLng) * cosLat;
+                const distance = (dLat * dLat) + (dLng * dLng);
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestIndex = index;
+                }
+            }
+
+            return nearestIndex;
+        }
+
+        function renderMetrics(metrics) {
+            document.getElementById('adventure-metrics').innerHTML = [
+                createMetric('Distance', formatDistance(metrics.distanceKm)),
+                createMetric('D+', `${Math.round(metrics.positive).toLocaleString('fr-FR')} m`),
+                createMetric('D-', `${Math.round(metrics.negative).toLocaleString('fr-FR')} m`),
+                createMetric('Départ', metrics.startElevation == null ? 'n/d' : formatElevation(metrics.startElevation)),
+                createMetric('Arrivée', metrics.endElevation == null ? 'n/d' : formatElevation(metrics.endElevation))
+            ].join('');
+        }
+
+        function renderMap(coords, color, cityLabels = [], contextCities = [], travelRoute = []) {
+            if (adventureLayer) {
+                adventureMap.removeLayer(adventureLayer);
+            }
+
+            if (adventureTravelLayer) {
+                adventureMap.removeLayer(adventureTravelLayer);
+                adventureTravelLayer = null;
+            }
+
+            if (adventureCityLayer) {
+                adventureMap.removeLayer(adventureCityLayer);
+                adventureCityLayer = null;
+            }
+
+            if (adventureCountryLayer) {
+                adventureMap.removeLayer(adventureCountryLayer);
+                adventureCountryLayer = null;
+            }
+
+            if (!Array.isArray(coords) || coords.length < 2) {
+                return;
+            }
+
+            if (IS_FILE_PROTOCOL) {
+                const countryBorderLayer = getEuropeBorderLayer();
+                if (countryBorderLayer) {
+                    adventureCountryLayer = countryBorderLayer.addTo(adventureMap);
+                }
+            }
+
+            if (travelRoute.length >= 2) {
+                adventureTravelLayer = L.polyline(travelRoute, {
+                    color: 'rgba(255, 200, 80, 0.65)',
+                    weight: 2,
+                    opacity: 1,
+                    dashArray: '6 8',
+                    lineJoin: 'round'
+                }).addTo(adventureMap);
+            }
+
+            adventureLayer = L.polyline(coords.map((coord) => [coord.lat, coord.lng]), {
+                color,
+                weight: 4,
+                opacity: 0.9
+            }).addTo(adventureMap);
+
+            const bounds = adventureLayer.getBounds();
+            if (bounds.isValid()) {
+                adventureMap.fitBounds(bounds.pad(0.08));
+            }
+
+            const markers = [];
+            cityLabels.forEach((label) => {
+                if (!label || !label.name) {
+                    return;
+                }
+
+                let index = -1;
+                if (Number.isFinite(label.lat) && Number.isFinite(label.lng)) {
+                    index = findNearestCoordinateIndex(coords, label.lat, label.lng);
+                } else {
+                    const ratio = Number.isFinite(label.ratio) ? Math.min(1, Math.max(0, label.ratio)) : null;
+                    index = ratio == null
+                        ? -1
+                        : Math.min(coords.length - 1, Math.max(0, Math.round((coords.length - 1) * ratio)));
+                }
+
+                if (index < 0) {
+                    return;
+                }
+
+                const coord = coords[index];
+                markers.push(L.circleMarker([coord.lat, coord.lng], {
+                    radius: 8,
+                    color: '#ffffff',
+                    weight: 2,
+                    opacity: 0.9,
+                    fillOpacity: 0,
+                    className: 'adventure-city-point-ring'
+                }));
+
+                markers.push(L.circleMarker([coord.lat, coord.lng], {
+                    radius: 4.8,
+                    color: '#0a1524',
+                    weight: 1.2,
+                    fillColor: color,
+                    fillOpacity: 0.95
+                }));
+
+                markers.push(L.marker([coord.lat, coord.lng], {
+                    interactive: false,
+                    icon: L.divIcon({
+                        className: 'adventure-city-label',
+                        html: `<span>${escapeHtml(label.name)}</span>`,
+                        iconSize: null,
+                        iconAnchor: [-(Number(label.dx) || 12), Number(label.dy) || -8]
+                    })
+                }));
+            });
+
+            contextCities.forEach((city) => {
+                if (!city || !Number.isFinite(city.lat) || !Number.isFinite(city.lng)) return;
+                markers.push(L.circleMarker([city.lat, city.lng], {
+                    radius: 3,
+                    color: 'rgba(200,220,240,0.6)',
+                    weight: 1.5,
+                    fillColor: 'rgba(200,220,240,0.5)',
+                    fillOpacity: 1
+                }));
+                markers.push(L.marker([city.lat, city.lng], {
+                    interactive: false,
+                    icon: L.divIcon({
+                        className: 'adventure-context-city-label',
+                        html: `<span>${escapeHtml(city.name)}</span>`,
+                        iconSize: null,
+                        iconAnchor: [-(Number(city.dx) || 10), Number(city.dy) || -6]
+                    })
+                }));
+            });
+
+            if (markers.length > 0) {
+                adventureCityLayer = L.layerGroup(markers).addTo(adventureMap);
+            }
+        }
+
+        function renderProfile(profile, note) {
+            const plot = document.getElementById('adventure-profile-plot');
+            document.getElementById('adventure-profile-note').textContent = note;
+
+            if (!profile || profile.length < 2) {
+                plot.innerHTML = '<div class="adventure-empty">Profil altimétrique indisponible pour cette trace.</div>';
+                return;
+            }
+
+            const width = 920;
+            const height = 280;
+            const padding = { left: 54, right: 18, top: 24, bottom: 34 };
+            const innerWidth = width - padding.left - padding.right;
+            const innerHeight = height - padding.top - padding.bottom;
+            const distances = profile.map((point) => point.distanceKm);
+            const elevations = profile.map((point) => point.elevationM);
+            const minDistance = distances[0];
+            const maxDistance = distances[distances.length - 1];
+            const minElevation = Math.min(...elevations);
+            const maxElevation = Math.max(...elevations);
+            const elevationSpan = Math.max(maxElevation - minElevation, 1);
+
+            const xAt = (distance) => padding.left + ((distance - minDistance) / Math.max(maxDistance - minDistance, 0.001)) * innerWidth;
+            const yAt = (elevation) => padding.top + (1 - (elevation - minElevation) / elevationSpan) * innerHeight;
+            const linePath = profile.map((point, index) => `${index === 0 ? 'M' : 'L'} ${xAt(point.distanceKm).toFixed(2)} ${yAt(point.elevationM).toFixed(2)}`).join(' ');
+            const fillPath = `${linePath} L ${xAt(maxDistance).toFixed(2)} ${(height - padding.bottom).toFixed(2)} L ${xAt(minDistance).toFixed(2)} ${(height - padding.bottom).toFixed(2)} Z`;
+            const ticks = Array.from({ length: 5 }, (_, index) => {
+                const ratio = index / 4;
+                return Math.round(minElevation + (1 - ratio) * elevationSpan);
+            });
+
+            plot.innerHTML = `
+                <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Profil altimétrique">
+                    <defs>
+                        <linearGradient id="profile-fill" x1="0" x2="0" y1="0" y2="1">
+                            <stop offset="0%" stop-color="rgba(0,255,136,0.55)"></stop>
+                            <stop offset="100%" stop-color="rgba(0,255,136,0.05)"></stop>
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="${width}" height="${height}" fill="rgba(255,255,255,0.01)"></rect>
+                    ${ticks.map((tick) => `
+                        <line x1="${padding.left}" y1="${yAt(tick).toFixed(2)}" x2="${width - padding.right}" y2="${yAt(tick).toFixed(2)}" stroke="rgba(255,255,255,0.08)" stroke-width="1"></line>
+                        <text x="${padding.left - 10}" y="${(yAt(tick) + 4).toFixed(2)}" text-anchor="end" fill="rgba(233,238,245,0.7)" font-size="11" font-family="JetBrains Mono">${tick} m</text>
+                    `).join('')}
+                    <path d="${fillPath}" fill="url(#profile-fill)"></path>
+                    <path d="${linePath}" fill="none" stroke="#00ff88" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></path>
+                    <line x1="${padding.left}" y1="${height - padding.bottom}" x2="${width - padding.right}" y2="${height - padding.bottom}" stroke="rgba(255,255,255,0.16)" stroke-width="1"></line>
+                    <text x="${padding.left}" y="${height - 10}" fill="rgba(233,238,245,0.7)" font-size="11" font-family="JetBrains Mono">0 km</text>
+                    <text x="${width - padding.right}" y="${height - 10}" text-anchor="end" fill="rgba(233,238,245,0.7)" font-size="11" font-family="JetBrains Mono">${maxDistance.toFixed(1).replace('.', ',')} km</text>
+                </svg>
+            `;
+        }
+
+        function sampleCoordinates(coords, maxSamples = 90) {
+            if (coords.length <= maxSamples) {
+                return coords;
+            }
+
+            const step = (coords.length - 1) / (maxSamples - 1);
+            const sampled = [];
+            for (let index = 0; index < maxSamples; index += 1) {
+                sampled.push(coords[Math.round(index * step)]);
+            }
+            return sampled;
+        }
+
+        async function fetchElevationProfile(coords) {
+            const sampled = sampleCoordinates(coords, 80);
+            const latitudes = sampled.map((coord) => coord.lat.toFixed(5)).join(',');
+            const longitudes = sampled.map((coord) => coord.lng.toFixed(5)).join(',');
+            const response = await fetch(`https://api.open-meteo.com/v1/elevation?latitude=${latitudes}&longitude=${longitudes}`);
+            if (!response.ok) {
+                throw new Error('Elevation service unavailable');
+            }
+            const data = await response.json();
+            if (!Array.isArray(data.elevation) || data.elevation.length !== sampled.length) {
+                throw new Error('Invalid elevation response');
+            }
+
+            let distanceKm = 0;
+            return sampled.map((coord, index) => {
+                if (index > 0) {
+                    distanceKm += haversineDistance(sampled[index - 1], coord);
+                }
+                return {
+                    distanceKm,
+                    elevationM: Number(data.elevation[index])
+                };
+            });
+        }
+
+        async function getAdventurePayload(adventure) {
+            if (adventureCache.has(adventure.id)) {
+                return adventureCache.get(adventure.id);
+            }
+
+            const payload = await adventure.load();
+            adventureCache.set(adventure.id, payload);
+            return payload;
+        }
+
+        async function showAdventure(adventure) {
+            document.getElementById('adventure-title').textContent = adventure.title;
+            document.getElementById('adventure-summary').textContent = adventure.summary;
+            document.getElementById('adventure-source').innerHTML = `${adventure.sourceLabel}<br><a href="${adventure.sourceUrl}" target="_blank" rel="noopener noreferrer">source</a>`;
+            document.getElementById('adventure-profile-note').textContent = 'Lecture en cours…';
+            document.getElementById('adventure-profile-plot').innerHTML = '<div class="adventure-empty">Chargement du profil…</div>';
+
+            try {
+                const { coords, profile, metricsOverride, profileNote: payloadProfileNote } = await getAdventurePayload(adventure);
+                renderMap(coords, adventure.color, adventure.cityLabels, adventure.contextCities || [], adventure.travelRoute || []);
+
+                let finalProfile = profile;
+                let profileNote = payloadProfileNote || 'Profil extrait de la trace locale.';
+
+                if ((!finalProfile || finalProfile.length < 2) && adventure.id === 'vjosa') {
+                    try {
+                        finalProfile = await fetchElevationProfile(coords);
+                        profileNote = 'Profil calculé à partir du relief via Open-Meteo.';
+                    } catch (error) {
+                        finalProfile = [];
+                        profileNote = 'Le relief du fleuve n’a pas pu être recalculé automatiquement.';
+                    }
+                }
+
+                renderMetrics(calculateMetrics(coords, finalProfile, metricsOverride));
+                renderProfile(finalProfile, profileNote);
+            } catch (error) {
+                document.getElementById('adventure-metrics').innerHTML = '';
+                document.getElementById('adventure-profile-note').textContent = 'Chargement impossible.';
+                document.getElementById('adventure-profile-plot').innerHTML = '<div class="adventure-empty">Impossible de charger les données de cette aventure. En local, ouvre la page via un serveur HTTP ou conserve les fichiers .data.js à jour.</div>';
+            }
+        }
+
+        function buildAdventureSelector() {
+            const list = document.getElementById('adventure-list');
+            list.innerHTML = ADVENTURES.map((adventure, index) => `
+                <button
+                    type="button"
+                    class="adventure-choice${index === 0 ? ' is-active' : ''}"
+                    data-adventure-id="${adventure.id}"
+                    role="tab"
+                    aria-selected="${index === 0 ? 'true' : 'false'}">
+                    <span class="adventure-choice-title">${adventure.title}</span>
+                    <span class="adventure-choice-meta">${adventure.meta}</span>
+                </button>
+            `).join('');
+
+            list.addEventListener('click', async (event) => {
+                const button = event.target.closest('[data-adventure-id]');
+                if (!button) {
+                    return;
+                }
+
+                list.querySelectorAll('.adventure-choice').forEach((choice) => {
+                    choice.classList.remove('is-active');
+                    choice.setAttribute('aria-selected', 'false');
+                });
+
+                button.classList.add('is-active');
+                button.setAttribute('aria-selected', 'true');
+
+                const selectedAdventure = ADVENTURES.find((adventure) => adventure.id === button.dataset.adventureId);
+                if (selectedAdventure) {
+                    await showAdventure(selectedAdventure);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initAdventureMap();
+            buildAdventureSelector();
+            await showAdventure(ADVENTURES[0]);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divers — Portfolio</title>
+    <meta name="description" content="Une zone plus libre du portfolio, faite de curiosités, d’animations et d’expérimentations transverses.">
+    <meta property="og:title" content="Divers — Portfolio">
+    <meta property="og:description" content="Une zone plus libre du portfolio, faite de curiosités, d’animations et d’expérimentations transverses.">
+    <meta property="og:image" content="../Images/Accueil/scouterDBZ.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="../css/page.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <style>
+        .anim-lab-intro {
+            margin-top: 0.3rem;
+            color: var(--color-muted);
+            font-size: 0.9rem;
+        }
+
+        .anim-selector {
+            margin-top: 1.1rem;
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 0.55rem;
+        }
+
+        .anim-btn {
+            border: 1px solid var(--accent-dim);
+            background: rgba(8, 18, 38, 0.6);
+            color: var(--color-text);
+            padding: 0.65rem 0.55rem;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease;
+            font-family: var(--font-mono);
+            min-height: 4.6rem;
+            text-align: left;
+        }
+
+        .anim-btn:hover,
+        .anim-btn:focus-visible {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent-dim), 0 0 16px var(--accent-glow);
+            background: rgba(125, 211, 252, 0.1);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .anim-btn.is-active {
+            border-color: var(--accent);
+            background: rgba(125, 211, 252, 0.16);
+            box-shadow: 0 0 0 1px var(--accent-dim), 0 0 18px var(--accent-glow);
+        }
+
+        .anim-chip {
+            display: block;
+            font-size: 0.62rem;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 0.35rem;
+        }
+
+        .anim-label {
+            display: block;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            color: var(--color-text);
+        }
+
+        .anim-desc {
+            margin-top: 0.9rem;
+            border-left: 3px solid var(--accent);
+            background: rgba(8, 18, 38, 0.55);
+            padding: 0.9rem 1rem;
+            color: var(--color-muted);
+            min-height: 4.8rem;
+            line-height: 1.75;
+        }
+
+        .bushido-overlay {
+            --slash-angle: -17deg;
+            --slash-thickness: 4px;
+            --slash-core: 255, 51, 102;
+            --slash-glow: 255, 230, 230;
+            position: fixed;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle at center, rgba(10, 14, 24, 0.65) 0%, rgba(5, 10, 19, 0.9) 70%);
+            backdrop-filter: blur(2px);
+            z-index: 501;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease;
+            overflow: hidden;
+        }
+
+        .bushido-overlay.is-active {
+            opacity: 1;
+        }
+
+        .bushido-overlay-kanji {
+            font-family: "Yu Mincho", "Hiragino Mincho ProN", "MS Mincho", serif;
+            font-size: clamp(5rem, 24vw, 18rem);
+            color: rgba(236, 245, 255, 0.92);
+            text-shadow: 0 0 18px rgba(255, 255, 255, 0.35), 0 0 40px var(--accent-glow);
+            line-height: 1;
+            opacity: 0;
+            transform: scale(0.82);
+        }
+
+        .bushido-overlay-title {
+            position: absolute;
+            bottom: 10vh;
+            font-family: var(--font-mono);
+            letter-spacing: 0.2em;
+            font-size: clamp(0.72rem, 1.7vw, 1rem);
+            color: rgba(232, 240, 254, 0.86);
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        .bushido-slash {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 160vmax;
+            height: var(--slash-thickness);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(var(--slash-glow), 0.96), rgba(var(--slash-core), 0.96), rgba(255, 255, 255, 0));
+            transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(0);
+            transform-origin: center;
+            opacity: 0;
+            filter: drop-shadow(0 0 10px rgba(var(--slash-glow), 0.75));
+        }
+
+        .bushido-overlay.is-active .bushido-overlay-kanji {
+            animation: bushido-kanji-in 1s ease forwards;
+        }
+
+        .bushido-overlay.is-active .bushido-overlay-title {
+            animation: bushido-title-in 0.7s 0.12s ease forwards;
+        }
+
+        .bushido-overlay.is-active .bushido-slash {
+            animation: bushido-slash-cut 0.52s 0.56s cubic-bezier(.12,.66,.18,1) forwards;
+        }
+
+        .transition-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .transition-overlay.is-active {
+            pointer-events: all;
+        }
+
+        #transition-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes bushido-kanji-in {
+            0%   { opacity: 0; transform: scale(0.82); }
+            35%  { opacity: 1; transform: scale(1); }
+            68%  { opacity: 1; transform: scale(1.02); }
+            100% { opacity: 0; transform: scale(1.06); }
+        }
+
+        @keyframes bushido-title-in {
+            0%   { opacity: 0; transform: translateY(12px); }
+            30%  { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-6px); }
+        }
+
+        @keyframes bushido-slash-cut {
+            0%   { opacity: 0; transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(0.06); }
+            12%  { opacity: 1; }
+            65%  { opacity: 1; transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(1.12); }
+        }
+
+        @media (max-width: 1120px) {
+            .anim-selector {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .anim-selector {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .anim-btn {
+                min-height: 4.3rem;
+            }
+        }
+
+        #monkey-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 502;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        #monkey-overlay.is-active {
+            pointer-events: all;
+        }
+
+        #monkey-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #elephant-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 502;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        #elephant-overlay.is-active {
+            pointer-events: all;
+        }
+
+        #elephant-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #galaxy-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 502;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        #galaxy-overlay.is-active {
+            pointer-events: all;
+        }
+
+        #galaxy-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #charts-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 502;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        #charts-overlay.is-active {
+            pointer-events: all;
+        }
+
+        #charts-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #agent-friendly-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 502;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        #agent-friendly-overlay.is-active {
+            pointer-events: all;
+        }
+
+        #agent-friendly-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .anim-btn,
+            .bushido-overlay {
+                transition: none;
+            }
+
+            .bushido-overlay.is-active .bushido-overlay-kanji,
+            .bushido-overlay.is-active .bushido-overlay-title,
+            .bushido-overlay.is-active .bushido-slash {
+                animation-duration: 0.01ms;
+                animation-iteration-count: 1;
+            }
+        }
+    </style>
+</head>
+<body class="theme-misc">
+
+    <a class="skip-link" href="#main-content">Aller au contenu principal</a>
+
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <nav class="page-nav">
+        <a href="../index.html" class="nav-back">
+            <span class="nav-back-arrow">←</span>
+            RETOUR
+        </a>
+        <span class="nav-title">PORTFOLIO</span>
+        <span class="nav-tag">DIVERS</span>
+    </nav>
+
+    <header class="section-hero">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <span class="section-eyebrow">// MODULE_08</span>
+        <h1 class="section-title">DIVERS</h1>
+        <p class="section-subtitle">
+            Les choses qui ne rentrent dans aucune case fixe, mais qui disent pourtant beaucoup.
+        </p>
+    </header>
+
+    <main id="main-content" class="section-content">
+        <div class="content-block">
+            <h2 class="block-title">ÇA DÉFILE // VERSION SÉRIEUSE</h2>
+            <div class="misc-rotator-shell" aria-live="polite">
+                <span class="misc-rotator-prefix">//</span>
+                <span id="misc-rotator-serious" class="misc-rotator-text"></span>
+                <span class="misc-rotator-cursor">█</span>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">ÇA DÉFILE // VERSION ROMAIN</h2>
+            <div class="misc-rotator-shell" aria-live="polite">
+                <span class="misc-rotator-prefix">//</span>
+                <span id="misc-rotator-fun" class="misc-rotator-text"></span>
+                <span class="misc-rotator-cursor">█</span>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">SÉLECTEUR D'ANIMATIONS</h2>
+            <p class="anim-lab-intro">
+                Ici sont listées toutes les animations utilisées sur ce site (et quelques animations bonus). Clique sur celle que tu veux visualiser.
+            </p>
+
+            <div class="anim-selector" id="anim-selector" role="listbox" aria-label="Sélecteur d'animations globales">
+                <button type="button" class="anim-btn" data-anim="qualite" aria-selected="false"><span class="anim-chip">01</span><span class="anim-label">QUALITÉ LOGICIELLE</span></button>
+                <button type="button" class="anim-btn" data-anim="ia" aria-selected="false"><span class="anim-chip">02</span><span class="anim-label">INTELLIGENCE ARTIFICIELLE</span></button>
+                <button type="button" class="anim-btn" data-anim="running" aria-selected="false"><span class="anim-chip">03</span><span class="anim-label">AVENTURE / ECG</span></button>
+                <button type="button" class="anim-btn" data-anim="iaido" aria-selected="false"><span class="anim-chip">04</span><span class="anim-label">IAÏDO / SLASH</span></button>
+                <button type="button" class="anim-btn" data-anim="dessin" aria-selected="false"><span class="anim-chip">05</span><span class="anim-label">DESSIN / TRAITS</span></button>
+                <button type="button" class="anim-btn" data-anim="robotique" aria-selected="false"><span class="anim-chip">06</span><span class="anim-label">ROBOTIQUE / HEX</span></button>
+                <button type="button" class="anim-btn" data-anim="misc" aria-selected="false"><span class="anim-chip">07</span><span class="anim-label">DIVERS / NŒUDS</span></button>
+                <button type="button" class="anim-btn" data-anim="echecs" aria-selected="false"><span class="anim-chip">08</span><span class="anim-label">ÉCHECS / DAMIER</span></button>
+                <button type="button" class="anim-btn" data-anim="bushido-gi" aria-selected="false"><span class="anim-chip">B1</span><span class="anim-label">GI · RECTITUDE</span></button>
+                <button type="button" class="anim-btn" data-anim="bushido-yu" aria-selected="false"><span class="anim-chip">B2</span><span class="anim-label">YU · COURAGE</span></button>
+                <button type="button" class="anim-btn" data-anim="bushido-jin" aria-selected="false"><span class="anim-chip">B3</span><span class="anim-label">JIN · BIENVEILLANCE</span></button>
+                <button type="button" class="anim-btn" data-anim="bushido-rei" aria-selected="false"><span class="anim-chip">B4</span><span class="anim-label">REI · RESPECT</span></button>
+                <button type="button" class="anim-btn" data-anim="bushido-makoto" aria-selected="false"><span class="anim-chip">B5</span><span class="anim-label">MAKOTO · SINCERITE</span></button>
+                <button type="button" class="anim-btn" data-anim="bushido-meiyo" aria-selected="false"><span class="anim-chip">B6</span><span class="anim-label">MEIYO · HONNEUR</span></button>
+                <button type="button" class="anim-btn" data-anim="bushido-chugi" aria-selected="false"><span class="anim-chip">B7</span><span class="anim-label">CHUGI · LOYAUTE</span></button>
+                <button type="button" class="anim-btn" data-anim="monkeys" aria-selected="false"><span class="anim-chip">🐒</span><span class="anim-label">INVASION DE SINGES</span></button>
+                <button type="button" class="anim-btn" data-anim="elephant" aria-selected="false"><span class="anim-chip">🐘</span><span class="anim-label">ÉLÉPHANT PSYCHÉ</span></button>
+                <button type="button" class="anim-btn" data-anim="galaxy" aria-selected="false"><span class="anim-chip">🌌</span><span class="anim-label">GALAXIE</span></button>
+                <button type="button" class="anim-btn" data-anim="charts" aria-selected="false"><span class="anim-chip">📊</span><span class="anim-label">GRAPHIQUES</span></button>
+                <button type="button" class="anim-btn" data-anim="agent-friendly" aria-selected="false"><span class="anim-chip">🤖</span><span class="anim-label">AGENT-FRIENDLY</span></button>
+            </div>
+
+            <div class="anim-desc" id="anim-desc" aria-live="polite"></div>
+        </div>
+    </main>
+
+    <div id="transition-overlay" class="transition-overlay" aria-hidden="true">
+        <canvas id="transition-canvas"></canvas>
+    </div>
+
+    <div class="bushido-overlay" id="bushido-overlay" aria-hidden="true">
+        <div class="bushido-overlay-kanji" id="bushido-overlay-kanji">義</div>
+        <div class="bushido-overlay-title" id="bushido-overlay-title">GI · RECTITUDE</div>
+        <div class="bushido-slash" aria-hidden="true"></div>
+    </div>
+
+    <div id="monkey-overlay" aria-hidden="true">
+        <canvas id="monkey-canvas"></canvas>
+    </div>
+
+    <div id="elephant-overlay" aria-hidden="true">
+        <canvas id="elephant-canvas"></canvas>
+    </div>
+
+    <div id="galaxy-overlay" aria-hidden="true">
+        <canvas id="galaxy-canvas"></canvas>
+    </div>
+
+    <div id="charts-overlay" aria-hidden="true">
+        <canvas id="charts-canvas"></canvas>
+    </div>
+
+    <div id="agent-friendly-overlay" aria-hidden="true">
+        <canvas id="agent-friendly-canvas"></canvas>
+    </div>
+
+    <footer class="section-footer">
+        <a href="../index.html">← RETOUR AU PORTFOLIO</a>
+        <a href="https://www.linkedin.com/in/romain-orhand-72410a13b/" target="_blank" rel="noopener noreferrer">CONTACT LINKEDIN ↗</a>
+    </footer>
+
+    <script src="../js/circuit.js"></script>
+    <script src="../js/transitions.js"></script>
+    <script src="../js/page.js"></script>
+    <script>
+        window.HeroAnim = {
+            start(canvas) {
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                const W = canvas.width;
+                const H = canvas.height;
+
+                const nodes = Array.from({ length: 22 }, () => ({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    r: 1 + Math.random() * 3,
+                    phase: Math.random() * Math.PI * 2,
+                }));
+
+                let t = 0;
+                function draw() {
+                    ctx.fillStyle = 'rgba(5,10,19,0.10)';
+                    ctx.fillRect(0, 0, W, H);
+
+                    for (let i = 0; i < nodes.length; i++) {
+                        for (let j = i + 1; j < nodes.length; j++) {
+                            const dx = nodes[i].x - nodes[j].x;
+                            const dy = nodes[i].y - nodes[j].y;
+                            const d = Math.sqrt(dx * dx + dy * dy);
+                            if (d < 130) {
+                                ctx.beginPath();
+                                ctx.moveTo(nodes[i].x, nodes[i].y);
+                                ctx.lineTo(nodes[j].x, nodes[j].y);
+                                ctx.strokeStyle = `rgba(125,211,252,${(1 - d / 130) * 0.25})`;
+                                ctx.lineWidth = 1;
+                                ctx.stroke();
+                            }
+                        }
+                    }
+
+                    nodes.forEach(node => {
+                        const pulse = (Math.sin(t + node.phase) + 1) / 2;
+                        ctx.beginPath();
+                        ctx.arc(node.x, node.y, node.r + pulse, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(125,211,252,${0.25 + pulse * 0.35})`;
+                        ctx.fill();
+                    });
+
+                    t += 0.03;
+                    requestAnimationFrame(draw);
+                }
+                draw();
+            }
+        };
+
+        (function () {
+            const sets = [
+                {
+                    id: 'misc-rotator-serious',
+                    phrases: [
+                        'Français : Langue maternelle',
+                        'English : C2',
+                        'Español : B2',
+                        'PSC : Diplôme de Premiers Secours Civiques',
+                        'ISTQB : Fondation, Agile et Test Manager certifiés',
+                        'Expertise Qualité',
+                        'Méthodologies : Agile, Kanban, TMAP',
+                        'Leadership : Coaching, Mentoring, Technical Excellence',
+                        '10+ années dans l\'ingénierie logicielle',
+                    ],
+                },
+                {
+                    id: 'misc-rotator-fun',
+                    phrases: [
+                        'Triple champion de l\'ENSI Poitiers de gobage de Flamby',
+                        'Champion de Puissance 4 du CM1 B',
+                        'Fabrication d\'une machine à sabrer le champagne',
+                        'Étude de l\'imbibation des Petits LU dans le lait selon la température',
+                        'Bande dessinée, jeux de société et gadgets',
+                        'Quantité impressionnante de savoirs inutiles',
+                        'Connaissance d\'un grand nombre de restaurants sur ses territoires de chasse',
+                        'Un bon café OUI, un café de distributeur NON',
+                        'Compétence cuisine mexicaine validée par un jury familial exigeant',
+                        'Preuve qu\'un CV ne raconte jamais toute l\'histoire',
+                    ],
+                },
+            ];
+
+            const TYPE_SPEED = 55;
+            const DELETE_SPEED = 28;
+            const PAUSE_FULL = 1900;
+            const PAUSE_EMPTY = 350;
+
+            function startRotator(el, phrases) {
+                if (!el || !phrases.length) return;
+
+                let phraseIdx = 0;
+                let charIdx = 0;
+                let deleting = false;
+
+                function tick() {
+                    const phrase = phrases[phraseIdx];
+
+                    if (!deleting) {
+                        charIdx++;
+                        el.textContent = phrase.slice(0, charIdx);
+                        if (charIdx === phrase.length) {
+                            deleting = true;
+                            setTimeout(tick, PAUSE_FULL);
+                            return;
+                        }
+                    } else {
+                        charIdx--;
+                        el.textContent = phrase.slice(0, charIdx);
+                        if (charIdx === 0) {
+                            deleting = false;
+                            phraseIdx = (phraseIdx + 1) % phrases.length;
+                            setTimeout(tick, PAUSE_EMPTY);
+                            return;
+                        }
+                    }
+
+                    setTimeout(tick, deleting ? DELETE_SPEED : TYPE_SPEED);
+                }
+
+                tick();
+            }
+
+            sets.forEach(set => startRotator(document.getElementById(set.id), set.phrases));
+
+            const animations = {
+                qualite: {
+                    label: 'Qualité logicielle',
+                    description: 'Transition Matrix rain: pluie de symboles et fondu terminal.'
+                },
+                ia: {
+                    label: 'Intelligence artificielle',
+                    description: 'Noyau neuronal, impulsions concentriques et connexions dynamiques.'
+                },
+                running: {
+                    label: 'Aventure',
+                    description: 'Onde ECG multi-traces avec effet de flash final.'
+                },
+                iaido: {
+                    label: 'Iaïdo',
+                    description: 'Slash diagonal lumineux puis separation de l\'ecran.'
+                },
+                dessin: {
+                    label: 'Dessin',
+                    description: 'Revelation par traits progressifs, comme un croquis en direct.'
+                },
+                robotique: {
+                    label: 'Robotique',
+                    description: 'Propagation d\'une grille hexagonale depuis le centre.'
+                },
+                misc: {
+                    label: 'Divers',
+                    description: 'Reseau de noeuds et connexions pulsees.'
+                },
+                echecs: {
+                    label: 'Echecs',
+                    description: 'Damier dynamique en expansion avec pulsation strategique.'
+                },
+                'bushido-gi': {
+                    label: 'GI',
+                    description: 'Bushido: agir avec droiture et decision juste.',
+                    bushido: { kanji: '義', title: 'GI · RECTITUDE', visual: { angle: '90deg', thickness: '4px', core: '255, 51, 102', glow: '255, 230, 230' } }
+                },
+                'bushido-yu': {
+                    label: 'YU',
+                    description: 'Bushido: avancer avec courage et lucidite.',
+                    bushido: { kanji: '勇', title: 'YU · COURAGE', visual: { angle: '0deg', thickness: '5px', core: '255, 122, 36', glow: '255, 214, 170' } }
+                },
+                'bushido-jin': {
+                    label: 'JIN',
+                    description: 'Bushido: employer sa force avec bienveillance.',
+                    bushido: { kanji: '仁', title: 'JIN · BIENVEILLANCE', visual: { angle: '80deg', thickness: '3.6px', core: '66, 209, 255', glow: '204, 244, 255' } }
+                },
+                'bushido-rei': {
+                    label: 'REI',
+                    description: 'Bushido: respect du dojo, des autres et du geste juste.',
+                    bushido: { kanji: '礼', title: 'REI · RESPECT', visual: { angle: '100deg', thickness: '3px', core: '235, 236, 245', glow: '255, 255, 255' } }
+                },
+                'bushido-makoto': {
+                    label: 'MAKOTO',
+                    description: 'Bushido: sincerite dans l\'intention et dans l\'action.',
+                    bushido: { kanji: '誠', title: 'MAKOTO · SINCERITE', visual: { angle: '110deg', thickness: '3.8px', core: '242, 120, 255', glow: '254, 216, 255' } }
+                },
+                'bushido-meiyo': {
+                    label: 'MEIYO',
+                    description: 'Bushido: honneur, integrite et dignite.',
+                    bushido: { kanji: '名誉', title: 'MEIYO · HONNEUR', visual: { angle: '120deg', thickness: '4.6px', core: '255, 206, 64', glow: '255, 241, 193' } }
+                },
+                'bushido-chugi': {
+                    label: 'CHUGI',
+                    description: 'Bushido: loyaute et constance dans l\'engagement.',
+                    bushido: { kanji: '忠義', title: 'CHUGI · LOYAUTE', visual: { angle: '70deg', thickness: '5.2px', core: '226, 62, 95', glow: '255, 213, 223' } }
+                },
+                monkeys: {
+                    label: 'Singes',
+                    description: 'Une pluie de petits singes envahit l\'ecran — ils tombent en colonnes.'
+                },
+                elephant: {
+                    label: 'Éléphant',
+                    description: 'Un éléphant majestueux trône au centre — halos arc-en-ciel, spirales tournoyantes et triangles kaléidoscopiques.'
+                },
+                galaxy: {
+                    label: 'Galaxie',
+                    description: 'Une galaxie spirale naît sous vos yeux — bras tourbillonnants, nébuleuses colorées et étoiles filantes dans le cosmos.'
+                },
+                charts: {
+                    label: 'Graphiques',
+                    description: 'Un déluge de graphiques en folie — courbes, camemberts, histogrammes et tableaux volent dans tous les sens.'
+                },
+                'agent-friendly': {
+                    label: 'Agent-friendly',
+                    description: 'Balises lisibles, flux de donnees et panneaux de contexte: une transition pensee pour les agents IA.'
+                }
+            };
+
+            const zoneColors = {
+                qualite: '#00d4ff',
+                ia: '#ff0080',
+                robotique: '#a855f7',
+                running: '#00ff88',
+                iaido: '#ff3366',
+                echecs: '#facc15',
+                dessin: '#ff9f43',
+                misc: '#7dd3fc'
+            };
+
+            const selector = document.getElementById('anim-selector');
+            const desc = document.getElementById('anim-desc');
+            const overlay = document.getElementById('bushido-overlay');
+            const overlayKanji = document.getElementById('bushido-overlay-kanji');
+            const overlayTitle = document.getElementById('bushido-overlay-title');
+            if (!selector || !desc || !overlay || !overlayKanji || !overlayTitle) return;
+
+            const buttons = Array.from(selector.querySelectorAll('.anim-btn'));
+            let overlayTimer = null;
+
+            function setActiveButton(id) {
+                buttons.forEach((btn) => {
+                    const isActive = btn.dataset.anim === id;
+                    btn.classList.toggle('is-active', isActive);
+                    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                });
+            }
+
+            function applyOverlayVisual(visual) {
+                const fallback = animations['bushido-gi'].bushido.visual;
+                const activeVisual = visual || fallback;
+                overlay.style.setProperty('--slash-angle', activeVisual.angle || fallback.angle);
+                overlay.style.setProperty('--slash-thickness', activeVisual.thickness || fallback.thickness);
+                overlay.style.setProperty('--slash-core', activeVisual.core || fallback.core);
+                overlay.style.setProperty('--slash-glow', activeVisual.glow || fallback.glow);
+            }
+
+            function playBushidoOverlay(value) {
+                if (overlayTimer) {
+                    clearTimeout(overlayTimer);
+                }
+
+                applyOverlayVisual(value.visual);
+                overlay.classList.remove('is-active');
+                void overlay.offsetWidth;
+
+                overlayKanji.textContent = value.kanji;
+                overlayTitle.textContent = value.title;
+
+                overlay.setAttribute('aria-hidden', 'false');
+                overlay.classList.add('is-active');
+
+                overlayTimer = window.setTimeout(() => {
+                    overlay.classList.remove('is-active');
+                    overlay.setAttribute('aria-hidden', 'true');
+                }, 1300);
+            }
+
+            function playMonkeyAnimation() {
+                const overlayEl = document.getElementById('monkey-overlay');
+                const canvasEl  = document.getElementById('monkey-canvas');
+                if (!overlayEl || !canvasEl) return;
+
+                canvasEl.width  = window.innerWidth;
+                canvasEl.height = window.innerHeight;
+                overlayEl.style.opacity = '1';
+                overlayEl.setAttribute('aria-hidden', 'false');
+                overlayEl.classList.add('is-active');
+
+                const ctx      = canvasEl.getContext('2d');
+                const W        = canvasEl.width;
+                const H        = canvasEl.height;
+                const DURATION = 7800;
+                const palette  = ['#ff9f43', '#e67e22', '#d35400', '#c9956a', '#7dd3fc', '#ff6b81', '#f0c040'];
+                const COLS     = Math.max(12, Math.floor(W / 42));
+
+                const columns = Array.from({ length: COLS }, () => ({
+                    x:     Math.random() * W,
+                    y:    -40 - Math.random() * H,
+                    speed: 1.6 + Math.random() * 3.8,
+                    size:  13 + Math.random() * 14,
+                    color: palette[Math.floor(Math.random() * palette.length)],
+                    phase: Math.random() * Math.PI * 2,
+                    trail: [],
+                }));
+
+                function drawMonkey(ctx, x, y, size, color, f) {
+                    const light = (color === '#7dd3fc' || color === '#ff6b81') ? '#d0f0ff' : '#f5c88a';
+                    ctx.save();
+                    ctx.translate(x, y);
+                    const sw = Math.sin(f) * 0.45;
+                    const lw = Math.sin(f + Math.PI) * 0.3;
+
+                    // Corps
+                    ctx.beginPath();
+                    ctx.ellipse(0, size * 0.32, size * 0.22, size * 0.28, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = color;
+                    ctx.fill();
+
+                    // Tête
+                    ctx.beginPath();
+                    ctx.arc(0, -size * 0.06, size * 0.2, 0, Math.PI * 2);
+                    ctx.fillStyle = color;
+                    ctx.fill();
+
+                    // Museau
+                    ctx.beginPath();
+                    ctx.ellipse(0, size * 0.02, size * 0.12, size * 0.095, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = light;
+                    ctx.fill();
+
+                    // Bras
+                    ctx.lineCap = 'round';
+                    ctx.lineWidth = Math.max(1.2, size * 0.09);
+                    ctx.strokeStyle = color;
+                    ctx.beginPath();
+                    ctx.moveTo(-size * 0.18, size * 0.06);
+                    ctx.quadraticCurveTo(-size * 0.52, -size * 0.22 + sw * size * 0.28, -size * 0.58, -size * 0.06);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(size * 0.18, size * 0.06);
+                    ctx.quadraticCurveTo(size * 0.52, -size * 0.22 - sw * size * 0.28, size * 0.58, -size * 0.06);
+                    ctx.stroke();
+
+                    // Jambes
+                    ctx.beginPath();
+                    ctx.moveTo(-size * 0.1, size * 0.57);
+                    ctx.lineTo(-size * 0.18 + lw * size * 0.22, size * 0.84);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(size * 0.1, size * 0.57);
+                    ctx.lineTo(size * 0.18 - lw * size * 0.22, size * 0.84);
+                    ctx.stroke();
+
+                    // Queue
+                    ctx.lineWidth = Math.max(1, size * 0.07);
+                    ctx.beginPath();
+                    ctx.moveTo(size * 0.2, size * 0.44);
+                    ctx.quadraticCurveTo(size * 0.68, size * 0.6, size * 0.6, size * 0.1);
+                    ctx.stroke();
+
+                    // Yeux
+                    ctx.fillStyle = '#08101e';
+                    ctx.beginPath();
+                    ctx.arc(-size * 0.07, -size * 0.08, size * 0.042, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(size * 0.07, -size * 0.08, size * 0.042, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Reflets
+                    ctx.fillStyle = 'rgba(255,255,255,0.72)';
+                    ctx.beginPath();
+                    ctx.arc(-size * 0.06, -size * 0.1, size * 0.018, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(size * 0.08, -size * 0.1, size * 0.018, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.restore();
+                }
+
+                let start = null;
+                let globalFrame = 0;
+
+                function animate(ts) {
+                    if (!start) start = ts;
+                    const progress = Math.min((ts - start) / DURATION, 1);
+                    globalFrame += 0.2;
+
+                    ctx.fillStyle = progress < 0.68 ? 'rgba(5,10,19,0.08)' : 'rgba(5,10,19,0.13)';
+                    ctx.fillRect(0, 0, W, H);
+
+                    columns.forEach((col) => {
+                        col.y += col.speed;
+                        if (col.y > H + col.size * 2) {
+                            col.y = -col.size * 2;
+                        }
+
+                        col.trail.push({ x: col.x, y: col.y });
+                        if (col.trail.length > 4) col.trail.shift();
+
+                        // Traîne fantôme
+                        col.trail.forEach((pt, i) => {
+                            ctx.globalAlpha = (i / col.trail.length) * 0.22;
+                            drawMonkey(ctx, pt.x, pt.y, col.size * 0.72, col.color, globalFrame + i * 0.6 + col.phase);
+                        });
+                        ctx.globalAlpha = 1;
+
+                        // Singe principal avec lueur
+                        ctx.save();
+                        ctx.shadowBlur  = 14;
+                        ctx.shadowColor = col.color;
+                        drawMonkey(ctx, col.x, col.y, col.size, col.color, globalFrame + col.phase);
+                        ctx.restore();
+                    });
+
+                    // Fondu final
+                    if (progress > 0.76) {
+                        const fade = (progress - 0.76) / 0.24;
+                        ctx.fillStyle = `rgba(5,10,19,${fade * 0.96})`;
+                        ctx.fillRect(0, 0, W, H);
+                    }
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        overlayEl.style.opacity = '0';
+                        overlayEl.classList.remove('is-active');
+                        overlayEl.setAttribute('aria-hidden', 'true');
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            function playElephantAnimation() {
+                const overlayEl = document.getElementById('elephant-overlay');
+                const canvasEl  = document.getElementById('elephant-canvas');
+                if (!overlayEl || !canvasEl) return;
+
+                canvasEl.width  = window.innerWidth;
+                canvasEl.height = window.innerHeight;
+                overlayEl.style.opacity = '1';
+                overlayEl.setAttribute('aria-hidden', 'false');
+                overlayEl.classList.add('is-active');
+
+                const ctx = canvasEl.getContext('2d');
+                const W   = canvasEl.width;
+                const H   = canvasEl.height;
+                const DURATION = 3200;
+                const cx  = W / 2;
+                const cy  = H / 2;
+
+                function drawElephant(ctx, x, y, scale, hue, t) {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.scale(scale, scale);
+
+                    const bodyColor  = `hsl(${hue}, 65%, 55%)`;
+                    const lightColor = `hsl(${(hue + 40) % 360}, 80%, 78%)`;
+                    const darkColor  = `hsl(${(hue + 200) % 360}, 55%, 35%)`;
+
+                    // Oreilles
+                    ctx.beginPath();
+                    ctx.ellipse(-75, 0, 48, 58, -0.3, 0, Math.PI * 2);
+                    ctx.fillStyle = darkColor; ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(-69, 2, 32, 40, -0.3, 0, Math.PI * 2);
+                    ctx.fillStyle = lightColor; ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.ellipse(75, 0, 48, 58, 0.3, 0, Math.PI * 2);
+                    ctx.fillStyle = darkColor; ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(69, 2, 32, 40, 0.3, 0, Math.PI * 2);
+                    ctx.fillStyle = lightColor; ctx.fill();
+
+                    // Corps
+                    ctx.beginPath();
+                    ctx.ellipse(0, 35, 85, 62, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = bodyColor; ctx.fill();
+
+                    // Tête
+                    ctx.beginPath();
+                    ctx.ellipse(0, -18, 56, 52, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = bodyColor; ctx.fill();
+
+                    // Défenses
+                    ctx.lineWidth = 7; ctx.lineCap = 'round';
+                    ctx.strokeStyle = `hsl(${(hue + 50) % 360}, 90%, 88%)`;
+                    ctx.beginPath();
+                    ctx.moveTo(-22, 20);
+                    ctx.quadraticCurveTo(-45, 55, -18, 70);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(22, 20);
+                    ctx.quadraticCurveTo(45, 55, 18, 70);
+                    ctx.stroke();
+
+                    // Trompe animée
+                    ctx.lineWidth = 22; ctx.strokeStyle = bodyColor;
+                    ctx.beginPath();
+                    ctx.moveTo(2, 24);
+                    ctx.bezierCurveTo(
+                        -18, 68,
+                        -42 + Math.sin(t * 2.5) * 22, 108 + Math.cos(t * 2) * 16,
+                        -8 + Math.sin(t * 3.2) * 28, 148
+                    );
+                    ctx.stroke();
+
+                    // Pattes
+                    ctx.fillStyle = darkColor;
+                    [-52, -17, 17, 52].forEach((lx) => {
+                        ctx.beginPath();
+                        ctx.roundRect(lx - 14, 88, 28, 56, 11);
+                        ctx.fill();
+                    });
+
+                    // Yeux
+                    ctx.fillStyle = '#030812';
+                    ctx.beginPath(); ctx.arc(-22, -28, 10, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(22, -28, 10, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+                    ctx.beginPath(); ctx.arc(-19, -32, 4.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(25, -32, 4.5, 0, Math.PI * 2); ctx.fill();
+
+                    ctx.restore();
+                }
+
+                let start = null;
+
+                function animate(ts) {
+                    if (!start) start = ts;
+                    const progress = Math.min((ts - start) / DURATION, 1);
+                    const t = (ts - start) / 1000;
+
+                    // Fond psychédélique
+                    const bgHue = (t * 55) % 360;
+                    ctx.fillStyle = 'rgba(3, 6, 14, 0.18)';
+                    ctx.fillRect(0, 0, W, H);
+                    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * 0.85);
+                    grad.addColorStop(0,   `hsla(${bgHue}, 90%, 10%, 0.18)`);
+                    grad.addColorStop(0.5, `hsla(${(bgHue + 120) % 360}, 80%, 6%, 0.14)`);
+                    grad.addColorStop(1,   `hsla(${(bgHue + 240) % 360}, 70%, 3%, 0.18)`);
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, 0, W, H);
+
+                    // Anneaux concentriques pulsants
+                    for (let i = 0; i < 14; i++) {
+                        const phase  = (i / 14) * Math.PI * 2;
+                        const radius = 55 + i * 42 + Math.sin(t * 1.9 + phase) * 28;
+                        const rHue   = (bgHue + i * 26 + t * 45) % 360;
+                        ctx.beginPath();
+                        ctx.arc(cx, cy - 30, radius, 0, Math.PI * 2);
+                        ctx.strokeStyle = `hsla(${rHue}, 100%, 65%, ${0.10 + 0.07 * Math.sin(t * 2.3 + phase)})`;
+                        ctx.lineWidth = 2.8;
+                        ctx.stroke();
+                    }
+
+                    // Spirale de particules
+                    for (let i = 0; i < 80; i++) {
+                        const frac  = i / 80;
+                        const angle = frac * Math.PI * 2 * 5 + t * 1.5;
+                        const dist  = 70 + frac * 280 + Math.sin(t * 2.8 + frac * 9) * 35;
+                        const px    = cx + Math.cos(angle) * dist;
+                        const py    = (cy - 30) + Math.sin(angle) * dist * 0.6;
+                        const pHue  = (bgHue + i * 4.5 + t * 70) % 360;
+                        const pSize = 2 + Math.abs(Math.sin(t * 3.5 + frac * 14)) * 2.8;
+                        ctx.beginPath();
+                        ctx.arc(px, py, pSize, 0, Math.PI * 2);
+                        ctx.fillStyle = `hsla(${pHue}, 100%, 68%, 0.78)`;
+                        ctx.fill();
+                    }
+
+                    // Triangles kaléidoscopiques orbitaux
+                    for (let i = 0; i < 10; i++) {
+                        const angle  = (i / 10) * Math.PI * 2 + t * 0.45;
+                        const dist   = 155 + Math.sin(t * 1.2 + i) * 35;
+                        const tx2    = cx + Math.cos(angle) * dist;
+                        const ty2    = (cy - 30) + Math.sin(angle) * dist;
+                        const tHue   = (bgHue + i * 36 + t * 30) % 360;
+                        const size   = 26 + Math.sin(t * 1.8 + i * 0.8) * 10;
+                        ctx.save();
+                        ctx.translate(tx2, ty2);
+                        ctx.rotate(angle + t * 2.2);
+                        ctx.beginPath();
+                        ctx.moveTo(0, -size);
+                        ctx.lineTo(size * 0.866, size * 0.5);
+                        ctx.lineTo(-size * 0.866, size * 0.5);
+                        ctx.closePath();
+                        ctx.strokeStyle = `hsla(${tHue}, 100%, 68%, 0.35)`;
+                        ctx.lineWidth = 1.8;
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+
+                    // Losanges en rotation rapide
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i / 6) * Math.PI * 2 + t * (-0.7);
+                        const dist  = 240 + Math.sin(t * 2 + i) * 30;
+                        const rx    = cx + Math.cos(angle) * dist;
+                        const ry    = (cy - 30) + Math.sin(angle) * dist * 0.7;
+                        const dHue  = (bgHue + i * 60) % 360;
+                        const ds    = 18 + Math.sin(t * 2.5 + i) * 7;
+                        ctx.save();
+                        ctx.translate(rx, ry);
+                        ctx.rotate(t * 3 + i);
+                        ctx.beginPath();
+                        ctx.moveTo(0, -ds); ctx.lineTo(ds, 0);
+                        ctx.lineTo(0, ds);  ctx.lineTo(-ds, 0);
+                        ctx.closePath();
+                        ctx.fillStyle = `hsla(${dHue}, 100%, 65%, 0.22)`;
+                        ctx.fill();
+                        ctx.strokeStyle = `hsla(${dHue}, 100%, 75%, 0.5)`;
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+
+                    // Éléphant central avec lueur
+                    const eHue   = (bgHue + 180) % 360;
+                    const eScale = 0.83 + 0.07 * Math.sin(t * 2.2);
+                    ctx.save();
+                    ctx.shadowBlur  = 50 + Math.sin(t * 3.1) * 25;
+                    ctx.shadowColor = `hsl(${eHue}, 100%, 62%)`;
+                    drawElephant(ctx, cx, cy - 60, eScale, eHue, t);
+                    ctx.restore();
+
+                    // Halos derrière l'éléphant
+                    for (let h = 0; h < 4; h++) {
+                        const hR   = 140 + h * 55 + Math.sin(t * 1.8 + h * 1.3) * 22;
+                        const hHue = (eHue + h * 90 + t * 40) % 360;
+                        ctx.beginPath();
+                        ctx.arc(cx, cy - 60, hR, 0, Math.PI * 2);
+                        ctx.strokeStyle = `hsla(${hHue}, 100%, 68%, ${0.06 + 0.04 * Math.sin(t * 1.6 + h * 2)})`;
+                        ctx.lineWidth = 22;
+                        ctx.stroke();
+                    }
+
+                    // Fondu final
+                    if (progress > 0.78) {
+                        const fade = (progress - 0.78) / 0.22;
+                        ctx.fillStyle = `rgba(3,6,14,${fade * 0.98})`;
+                        ctx.fillRect(0, 0, W, H);
+                    }
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        overlayEl.style.opacity = '0';
+                        overlayEl.classList.remove('is-active');
+                        overlayEl.setAttribute('aria-hidden', 'true');
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            function playGalaxyAnimation() {
+                const overlayEl = document.getElementById('galaxy-overlay');
+                const canvasEl  = document.getElementById('galaxy-canvas');
+                if (!overlayEl || !canvasEl) return;
+
+                canvasEl.width  = window.innerWidth;
+                canvasEl.height = window.innerHeight;
+                overlayEl.style.opacity = '1';
+                overlayEl.setAttribute('aria-hidden', 'false');
+                overlayEl.classList.add('is-active');
+
+                const ctx      = canvasEl.getContext('2d');
+                const W        = canvasEl.width;
+                const H        = canvasEl.height;
+                const DURATION = 15000;
+                const cx       = W / 2;
+                const cy       = H / 2;
+                const R        = Math.min(W, H) * 0.42;
+
+                // Spiral arm stars
+                const ARMS = 2;
+                const STARS_PER_ARM = 200;
+                const stars = [];
+                for (let arm = 0; arm < ARMS; arm++) {
+                    for (let i = 0; i < STARS_PER_ARM; i++) {
+                        const frac    = i / STARS_PER_ARM;
+                        const angle   = arm * Math.PI + frac * Math.PI * 3.8;
+                        const dist    = frac * R;
+                        const spread  = (0.04 + frac * 0.18) * R;
+                        stars.push({
+                            angle:      angle + (Math.random() - 0.5) * 0.55,
+                            dist:       dist  + (Math.random() - 0.5) * spread,
+                            r:          0.5   + Math.random() * 2.2 * (1 - frac * 0.4),
+                            hue:        arm === 0 ? 195 + Math.random() * 60 : 270 + Math.random() * 70,
+                            brightness: 60    + Math.random() * 35,
+                            twinkle:    Math.random() * Math.PI * 2,
+                            delay:      frac  * 0.65,
+                        });
+                    }
+                }
+
+                // Background stars
+                const bgStars = Array.from({ length: 220 }, () => ({
+                    x:       Math.random() * W,
+                    y:       Math.random() * H,
+                    r:       0.3 + Math.random() * 1.1,
+                    a:       0.15 + Math.random() * 0.65,
+                    twinkle: Math.random() * Math.PI * 2,
+                }));
+
+                // Nebula dust blobs
+                const DUST = Array.from({ length: 90 }, () => ({
+                    angle: Math.random() * Math.PI * 2,
+                    dist:  Math.random() * R * 0.85,
+                    size:  18 + Math.random() * 48,
+                    hue:   Math.random() < 0.5 ? 195 + Math.random() * 80 : 265 + Math.random() * 90,
+                    alpha: 0.025 + Math.random() * 0.07,
+                    delay: Math.random() * 0.4,
+                }));
+
+                // Shooting stars
+                const shooters = Array.from({ length: 7 }, (_, i) => ({
+                    startTime: 0.5 + i * 0.62 + Math.random() * 0.25,
+                    x0:        Math.random() * W,
+                    y0:        Math.random() * H * 0.6,
+                    angle:     Math.PI * 0.22 + (Math.random() - 0.5) * 0.5,
+                    speed:     380 + Math.random() * 320,
+                    length:    90  + Math.random() * 130,
+                    r:         0.8 + Math.random() * 1.4,
+                }));
+
+                let start = null;
+
+                function animate(ts) {
+                    if (!start) start = ts;
+                    const progress = Math.min((ts - start) / DURATION, 1);
+                    const t        = (ts - start) / 1000;
+                    const spinT    = -t * 0.16;
+
+                    // Accumulating dark bg
+                    const bgAlpha = progress < 0.06 ? (progress / 0.06) * 0.38 : 0.38;
+                    ctx.fillStyle = `rgba(1, 1, 8, ${bgAlpha})`;
+                    ctx.fillRect(0, 0, W, H);
+
+                    // Background stars
+                    bgStars.forEach((s) => {
+                        const a = s.a * (0.6 + 0.4 * Math.sin(t * 1.9 + s.twinkle));
+                        ctx.save();
+                        ctx.globalAlpha = a;
+                        ctx.beginPath();
+                        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fill();
+                        ctx.restore();
+                    });
+
+                    // Nebula dust
+                    DUST.forEach((d) => {
+                        const vis = Math.max(0, Math.min(1, (progress - d.delay) / 0.3));
+                        if (vis <= 0) return;
+                        const a = d.angle + spinT;
+                        const x = cx + Math.cos(a) * d.dist;
+                        const y = cy + Math.sin(a) * d.dist * 0.44;
+                        const g = ctx.createRadialGradient(x, y, 0, x, y, d.size);
+                        g.addColorStop(0, `hsla(${d.hue}, 78%, 63%, ${d.alpha * vis})`);
+                        g.addColorStop(1, `hsla(${d.hue}, 78%, 63%, 0)`);
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.arc(x, y, d.size, 0, Math.PI * 2);
+                        ctx.fillStyle = g;
+                        ctx.fill();
+                        ctx.restore();
+                    });
+
+                    // Spiral arm stars
+                    stars.forEach((s) => {
+                        const vis = Math.max(0, Math.min(1, (progress - s.delay * 0.55) / 0.22));
+                        if (vis <= 0) return;
+                        const a = s.angle + spinT;
+                        const x = cx + Math.cos(a) * s.dist;
+                        const y = cy + Math.sin(a) * s.dist * 0.44;
+                        const ta = vis * (0.55 + 0.45 * Math.sin(t * 3.0 + s.twinkle));
+                        ctx.save();
+                        ctx.globalAlpha  = ta;
+                        ctx.beginPath();
+                        ctx.arc(x, y, s.r, 0, Math.PI * 2);
+                        ctx.fillStyle   = `hsl(${s.hue}, 90%, ${s.brightness}%)`;
+                        ctx.shadowColor = `hsl(${s.hue}, 100%, 82%)`;
+                        ctx.shadowBlur  = s.r * 5;
+                        ctx.fill();
+                        ctx.restore();
+                    });
+
+                    // Central core — layered glow
+                    const cp = Math.min(1, progress / 0.12);
+                    [{ r: R * 0.24, blur: 90, a: 0.07 },
+                     { r: R * 0.11, blur: 55, a: 0.20 },
+                     { r: R * 0.045, blur: 32, a: 0.52 },
+                     { r: R * 0.016, blur: 14, a: 1.00 }].forEach(({ r, blur, a }) => {
+                        ctx.save();
+                        ctx.globalAlpha = a * cp;
+                        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+                        g.addColorStop(0,   'rgba(255, 242, 205, 1)');
+                        g.addColorStop(0.4, 'rgba(255, 200, 100, 0.55)');
+                        g.addColorStop(1,   'rgba(255, 180, 60, 0)');
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                        ctx.fillStyle   = g;
+                        ctx.shadowColor = '#fff5c0';
+                        ctx.shadowBlur  = blur;
+                        ctx.fill();
+                        ctx.restore();
+                    });
+
+                    // Shooting stars
+                    shooters.forEach((sh) => {
+                        const age = t - sh.startTime;
+                        if (age < 0 || age > 1.0) return;
+                        const headX = sh.x0 + Math.cos(sh.angle) * sh.speed * age;
+                        const headY = sh.y0 + Math.sin(sh.angle) * sh.speed * age;
+                        const tailX = headX - Math.cos(sh.angle) * sh.length;
+                        const tailY = headY - Math.sin(sh.angle) * sh.length;
+                        const alpha = Math.sin(Math.min(age / 1.0, 1) * Math.PI);
+                        const grad  = ctx.createLinearGradient(tailX, tailY, headX, headY);
+                        grad.addColorStop(0, 'rgba(255,255,255,0)');
+                        grad.addColorStop(1, `rgba(255,255,255,${alpha})`);
+                        ctx.save();
+                        ctx.strokeStyle = grad;
+                        ctx.lineWidth   = sh.r;
+                        ctx.shadowColor = '#ffffff';
+                        ctx.shadowBlur  = 10;
+                        ctx.beginPath();
+                        ctx.moveTo(tailX, tailY);
+                        ctx.lineTo(headX, headY);
+                        ctx.stroke();
+                        ctx.restore();
+                    });
+
+                    // Fade out
+                    if (progress > 0.82) {
+                        const fade = (progress - 0.82) / 0.18;
+                        ctx.fillStyle = `rgba(1, 1, 8, ${fade * 0.98})`;
+                        ctx.fillRect(0, 0, W, H);
+                    }
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        overlayEl.style.opacity = '0';
+                        overlayEl.classList.remove('is-active');
+                        overlayEl.setAttribute('aria-hidden', 'true');
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+
+            function playChartsAnimation() {
+                const overlayEl = document.getElementById('charts-overlay');
+                const canvasEl  = document.getElementById('charts-canvas');
+                if (!overlayEl || !canvasEl) return;
+
+                canvasEl.width  = window.innerWidth;
+                canvasEl.height = window.innerHeight;
+                overlayEl.style.opacity = '1';
+                overlayEl.setAttribute('aria-hidden', 'false');
+                overlayEl.classList.add('is-active');
+
+                const ctx      = canvasEl.getContext('2d');
+                const W        = canvasEl.width;
+                const H        = canvasEl.height;
+                const DURATION = 5500;
+
+                const PALETTE = ['#00d4ff','#ff0080','#a855f7','#00ff88','#f59e0b','#ef4444','#3b82f6','#10b981','#f97316','#8b5cf6'];
+
+                // ── helpers ──────────────────────────────────────────────
+                function rnd(a, b) { return a + Math.random() * (b - a); }
+                function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+                // ── widget definitions ────────────────────────────────────
+                // Each widget: { type, x, y, w, h, vx, vy, rot, vrot, alpha, born, color, color2, data }
+                function makeWidget() {
+                    const types  = ['line', 'bar', 'pie', 'table', 'area', 'scatter', 'donut', 'radar'];
+                    const type   = pick(types);
+                    const ww     = rnd(110, 210);
+                    const wh     = rnd(80, 170);
+                    const color  = pick(PALETTE);
+                    const color2 = pick(PALETTE);
+                    const bars   = Math.floor(rnd(4, 9));
+                    return {
+                        type,
+                        x:     rnd(-ww, W + ww),
+                        y:     rnd(-wh, H + wh),
+                        w: ww, h: wh,
+                        vx:    rnd(-1.8, 1.8),
+                        vy:    rnd(-1.4, 1.4),
+                        rot:   rnd(0, Math.PI * 2),
+                        vrot:  rnd(-0.012, 0.012),
+                        alpha: rnd(0.55, 0.92),
+                        born:  rnd(0, 0.35),
+                        color, color2,
+                        data:  Array.from({ length: bars }, () => rnd(0.12, 1.0)),
+                        pts:   Array.from({ length: 12 },  () => rnd(0.08, 0.92)),
+                    };
+                }
+
+                const WIDGETS = Array.from({ length: 28 }, makeWidget);
+
+                // ── draw functions ────────────────────────────────────────
+                function panel(x, y, w, h, label) {
+                    // Card background
+                    ctx.save();
+                    ctx.fillStyle   = 'rgba(8, 12, 28, 0.82)';
+                    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+                    ctx.lineWidth   = 1;
+                    ctx.beginPath();
+                    ctx.roundRect(-w / 2, -h / 2, w, h, 6);
+                    ctx.fill();
+                    ctx.stroke();
+                    // Title bar
+                    ctx.fillStyle = 'rgba(255,255,255,0.07)';
+                    ctx.beginPath();
+                    ctx.roundRect(-w / 2, -h / 2, w, 16, [6, 6, 0, 0]);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+                    ctx.font      = '7px monospace';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(label, -w / 2 + 5, -h / 2 + 10);
+                    ctx.restore();
+                }
+
+                function drawLine(w, c, pts, area) {
+                    const pw = w - 16;
+                    const ph = w * 0.45;
+                    const ox = -pw / 2;
+                    const oy = ph / 2;
+                    // Grid lines
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+                    ctx.lineWidth   = 0.5;
+                    for (let i = 0; i <= 3; i++) {
+                        const gy = oy - (i / 3) * ph;
+                        ctx.beginPath(); ctx.moveTo(ox, gy); ctx.lineTo(ox + pw, gy); ctx.stroke();
+                    }
+                    // Line / area
+                    ctx.beginPath();
+                    pts.forEach((v, i) => {
+                        const px = ox + (i / (pts.length - 1)) * pw;
+                        const py = oy - v * ph;
+                        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                    });
+                    if (area) {
+                        ctx.lineTo(ox + pw, oy); ctx.lineTo(ox, oy); ctx.closePath();
+                        const g = ctx.createLinearGradient(0, -ph / 2, 0, oy);
+                        g.addColorStop(0, c.replace(')', ', 0.5)').replace('rgb', 'rgba'));
+                        g.addColorStop(1, c.replace(')', ', 0.03)').replace('rgb', 'rgba'));
+                        ctx.fillStyle = g;
+                        ctx.fill();
+                    } else {
+                        ctx.strokeStyle = c;
+                        ctx.lineWidth   = 1.8;
+                        ctx.shadowColor = c;
+                        ctx.shadowBlur  = 6;
+                        ctx.stroke();
+                    }
+                    if (!area) {
+                        ctx.strokeStyle = c; ctx.lineWidth = 1.8;
+                        ctx.shadowColor = c; ctx.shadowBlur = 6;
+                        ctx.beginPath();
+                        pts.forEach((v, i) => {
+                            const px = ox + (i / (pts.length - 1)) * pw;
+                            const py = oy - v * ph;
+                            i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                        });
+                        ctx.stroke();
+                    }
+                    ctx.restore();
+                }
+
+                function drawBar(w, h, c, data, stacked) {
+                    const pw   = w - 16;
+                    const ph   = h * 0.52;
+                    const ox   = -pw / 2;
+                    const oy   = ph / 2;
+                    const bw   = (pw / data.length) * 0.68;
+                    const gap  = pw / data.length;
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+                    ctx.lineWidth   = 0.5;
+                    for (let i = 0; i <= 3; i++) {
+                        const gy = oy - (i / 3) * ph;
+                        ctx.beginPath(); ctx.moveTo(ox, gy); ctx.lineTo(ox + pw, gy); ctx.stroke();
+                    }
+                    data.forEach((v, i) => {
+                        const bx = ox + i * gap + (gap - bw) / 2;
+                        const bh = v * ph;
+                        const hue = (parseInt(c.slice(1), 16) + i * 24) % 360;
+                        ctx.fillStyle   = c;
+                        ctx.shadowColor = c;
+                        ctx.shadowBlur  = 4;
+                        ctx.beginPath();
+                        ctx.roundRect(bx, oy - bh, bw, bh, [2, 2, 0, 0]);
+                        ctx.fill();
+                    });
+                    ctx.restore();
+                }
+
+                function drawPie(r, data, colors, donut) {
+                    const total = data.reduce((s, v) => s + v, 0);
+                    let start   = -Math.PI / 2;
+                    ctx.save();
+                    data.forEach((v, i) => {
+                        const slice = (v / total) * Math.PI * 2;
+                        const c     = colors[i % colors.length];
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
+                        ctx.arc(0, 0, r, start, start + slice);
+                        ctx.closePath();
+                        ctx.fillStyle   = c;
+                        ctx.shadowColor = c;
+                        ctx.shadowBlur  = 8;
+                        ctx.fill();
+                        ctx.strokeStyle = 'rgba(8,12,28,0.7)';
+                        ctx.lineWidth   = 1.5;
+                        ctx.stroke();
+                        // label %
+                        const mid = start + slice / 2;
+                        const lr  = r * 0.65;
+                        ctx.fillStyle = 'rgba(255,255,255,0.75)';
+                        ctx.font      = `${Math.max(6, r * 0.16)}px monospace`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(Math.round((v / total) * 100) + '%', Math.cos(mid) * lr, Math.sin(mid) * lr);
+                        start += slice;
+                    });
+                    if (donut) {
+                        ctx.beginPath();
+                        ctx.arc(0, 0, r * 0.46, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(8,12,28,0.95)';
+                        ctx.fill();
+                    }
+                    ctx.restore();
+                }
+
+                function drawTable(w, h, c) {
+                    const cols  = 4;
+                    const rows  = 5;
+                    const cw    = (w - 10) / cols;
+                    const rh    = (h - 24) / rows;
+                    const ox    = -w / 2 + 5;
+                    const oy    = -h / 2 + 22;
+                    ctx.save();
+                    // Header
+                    ctx.fillStyle = c;
+                    ctx.globalAlpha = 0.22;
+                    ctx.fillRect(ox, oy, w - 10, rh);
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle   = 'rgba(255,255,255,0.65)';
+                    ctx.font        = '6px monospace';
+                    ctx.textAlign   = 'center';
+                    ['CAT', 'Q1', 'Q2', 'Δ'].forEach((h2, i) => {
+                        ctx.fillText(h2, ox + i * cw + cw / 2, oy + rh * 0.65);
+                    });
+                    // Rows
+                    for (let r = 1; r < rows; r++) {
+                        if (r % 2 === 0) {
+                            ctx.fillStyle   = 'rgba(255,255,255,0.04)';
+                            ctx.fillRect(ox, oy + r * rh, w - 10, rh);
+                        }
+                        ctx.fillStyle = 'rgba(255,255,255,0.45)';
+                        ctx.fillText('A' + r, ox + cw / 2, oy + r * rh + rh * 0.65);
+                        for (let ci = 1; ci < cols; ci++) {
+                            const val = Math.floor(rnd(10, 999));
+                            ctx.fillStyle = ci === 3
+                                ? (val > 500 ? '#00ff88' : '#ff4466')
+                                : 'rgba(255,255,255,0.55)';
+                            ctx.fillText(val, ox + ci * cw + cw / 2, oy + r * rh + rh * 0.65);
+                        }
+                    }
+                    // Grid lines
+                    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+                    ctx.lineWidth   = 0.5;
+                    for (let r = 0; r <= rows; r++) {
+                        ctx.beginPath();
+                        ctx.moveTo(ox, oy + r * rh);
+                        ctx.lineTo(ox + w - 10, oy + r * rh);
+                        ctx.stroke();
+                    }
+                    ctx.restore();
+                }
+
+                function drawScatter(w, c1, c2, pts) {
+                    const pw = w - 16;
+                    const ph = w * 0.48;
+                    const ox = -pw / 2;
+                    const oy = ph / 2;
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+                    ctx.lineWidth   = 0.5;
+                    for (let i = 0; i <= 3; i++) {
+                        const gy = oy - (i / 3) * ph;
+                        ctx.beginPath(); ctx.moveTo(ox, gy); ctx.lineTo(ox + pw, gy); ctx.stroke();
+                    }
+                    pts.forEach((v, i) => {
+                        const px = ox + (i / (pts.length - 1)) * pw;
+                        const py = oy - v * ph;
+                        const c  = i % 2 === 0 ? c1 : c2;
+                        ctx.beginPath();
+                        ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+                        ctx.fillStyle   = c;
+                        ctx.shadowColor = c;
+                        ctx.shadowBlur  = 5;
+                        ctx.fill();
+                    });
+                    ctx.restore();
+                }
+
+                function drawRadar(r, data, c) {
+                    const n     = data.length;
+                    const step  = (Math.PI * 2) / n;
+                    ctx.save();
+                    // Grid polygons
+                    for (let ring = 1; ring <= 3; ring++) {
+                        const fr = (ring / 3) * r;
+                        ctx.beginPath();
+                        for (let i = 0; i < n; i++) {
+                            const a  = i * step - Math.PI / 2;
+                            const px = Math.cos(a) * fr;
+                            const py = Math.sin(a) * fr;
+                            i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                        }
+                        ctx.closePath();
+                        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+                        ctx.lineWidth   = 0.5;
+                        ctx.stroke();
+                    }
+                    // Axes
+                    for (let i = 0; i < n; i++) {
+                        const a = i * step - Math.PI / 2;
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
+                        ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+                        ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+                        ctx.lineWidth   = 0.5;
+                        ctx.stroke();
+                    }
+                    // Data polygon
+                    ctx.beginPath();
+                    data.forEach((v, i) => {
+                        const a  = i * step - Math.PI / 2;
+                        const px = Math.cos(a) * r * v;
+                        const py = Math.sin(a) * r * v;
+                        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                    });
+                    ctx.closePath();
+                    ctx.fillStyle   = c.replace(')', ', 0.22)').replace('rgb', 'rgba');
+                    ctx.fill();
+                    ctx.strokeStyle = c;
+                    ctx.shadowColor = c;
+                    ctx.shadowBlur  = 8;
+                    ctx.lineWidth   = 1.8;
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                function drawWidget(wg, t) {
+                    ctx.save();
+                    ctx.translate(wg.x, wg.y);
+                    ctx.rotate(wg.rot);
+                    ctx.globalAlpha = wg.alpha;
+
+                    const W2 = wg.w, H2 = wg.h;
+                    const c1 = wg.color, c2 = wg.color2;
+                    const COLORS2 = [c1, c2, PALETTE[Math.floor(Math.abs(c1.charCodeAt(1)) % PALETTE.length)]];
+
+                    switch (wg.type) {
+                        case 'line':
+                            panel(0, 0, W2, H2, 'LINE CHART');
+                            ctx.translate(0, 8);
+                            drawLine(W2, c1, wg.pts, false);
+                            break;
+                        case 'area':
+                            panel(0, 0, W2, H2, 'AREA CHART');
+                            ctx.translate(0, 8);
+                            drawLine(W2, c1, wg.pts, true);
+                            break;
+                        case 'bar':
+                            panel(0, 0, W2, H2, 'BAR CHART');
+                            ctx.translate(0, 8);
+                            drawBar(W2, H2, c1, wg.data, false);
+                            break;
+                        case 'pie':
+                            panel(0, 0, W2, H2, 'PIE CHART');
+                            ctx.translate(0, 10);
+                            drawPie(Math.min(W2, H2) * 0.34, wg.data, COLORS2, false);
+                            break;
+                        case 'donut':
+                            panel(0, 0, W2, H2, 'DONUT CHART');
+                            ctx.translate(0, 10);
+                            drawPie(Math.min(W2, H2) * 0.34, wg.data, COLORS2, true);
+                            break;
+                        case 'table':
+                            panel(0, 0, W2, H2, 'DATA TABLE');
+                            drawTable(W2, H2, c1);
+                            break;
+                        case 'scatter':
+                            panel(0, 0, W2, H2, 'SCATTER PLOT');
+                            ctx.translate(0, 8);
+                            drawScatter(W2, c1, c2, wg.pts);
+                            break;
+                        case 'radar':
+                            panel(0, 0, W2, H2, 'RADAR CHART');
+                            ctx.translate(0, 10);
+                            drawRadar(Math.min(W2, H2) * 0.34, wg.data, c1);
+                            break;
+                    }
+                    ctx.restore();
+                }
+
+                let start = null;
+
+                function animate(ts) {
+                    if (!start) start = ts;
+                    const progress = Math.min((ts - start) / DURATION, 1);
+                    const t        = (ts - start) / 1000;
+
+                    // Background
+                    ctx.fillStyle = 'rgba(4, 6, 20, 0.28)';
+                    ctx.fillRect(0, 0, W, H);
+
+                    // Subtle grid
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(100, 160, 255, 0.05)';
+                    ctx.lineWidth   = 1;
+                    for (let x = 0; x < W; x += 60) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+                    for (let y = 0; y < H; y += 60) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+                    ctx.restore();
+
+                    // Move & draw widgets
+                    WIDGETS.forEach((wg) => {
+                        const vis = Math.max(0, Math.min(1, (progress - wg.born) / 0.12));
+                        if (vis <= 0) return;
+
+                        wg.x   += wg.vx;
+                        wg.y   += wg.vy;
+                        wg.rot += wg.vrot;
+
+                        // Bounce off edges
+                        if (wg.x < -wg.w * 0.6 || wg.x > W + wg.w * 0.6) wg.vx *= -1;
+                        if (wg.y < -wg.h * 0.6 || wg.y > H + wg.h * 0.6) wg.vy *= -1;
+
+                        const savedAlpha = wg.alpha;
+                        wg.alpha = savedAlpha * vis;
+                        drawWidget(wg, t);
+                        wg.alpha = savedAlpha;
+                    });
+
+                    // Fade out
+                    if (progress > 0.82) {
+                        const fade = (progress - 0.82) / 0.18;
+                        ctx.fillStyle = `rgba(4, 6, 20, ${fade * 0.98})`;
+                        ctx.fillRect(0, 0, W, H);
+                    }
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        overlayEl.style.opacity = '0';
+                        overlayEl.classList.remove('is-active');
+                        overlayEl.setAttribute('aria-hidden', 'true');
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            function playAgentFriendlyAnimation() {
+                const overlayEl = document.getElementById('agent-friendly-overlay');
+                const canvasEl  = document.getElementById('agent-friendly-canvas');
+                if (!overlayEl || !canvasEl) return;
+
+                canvasEl.width  = window.innerWidth;
+                canvasEl.height = window.innerHeight;
+                overlayEl.style.opacity = '1';
+                overlayEl.setAttribute('aria-hidden', 'false');
+                overlayEl.classList.add('is-active');
+
+                const ctx      = canvasEl.getContext('2d');
+                const W        = canvasEl.width;
+                const H        = canvasEl.height;
+                const DURATION = 12000;
+                const cx       = W * 0.5;
+                const cy       = H * 0.5;
+
+                const nodes = Array.from({ length: 70 }, () => {
+                    const a = Math.random() * Math.PI * 2;
+                    const r = 40 + Math.random() * Math.min(W, H) * 0.48;
+                    return {
+                        x: cx + Math.cos(a) * r,
+                        y: cy + Math.sin(a) * r,
+                        r: 1.2 + Math.random() * 2.8,
+                        phase: Math.random() * Math.PI * 2,
+                    };
+                });
+
+                let start = null;
+
+                function drawPanel(x, y, w, h, title, value, alpha) {
+                    ctx.save();
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = 'rgba(6, 12, 24, 0.85)';
+                    ctx.strokeStyle = 'rgba(94, 234, 212, 0.55)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.roundRect(x, y, w, h, 8);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = 'rgba(94, 234, 212, 0.95)';
+                    ctx.font = '11px "JetBrains Mono", monospace';
+                    ctx.fillText(title, x + 10, y + 18);
+                    ctx.fillStyle = 'rgba(226, 253, 248, 0.92)';
+                    ctx.font = '17px "Orbitron", sans-serif';
+                    ctx.fillText(value, x + 10, y + 42);
+                    ctx.restore();
+                }
+
+                function animate(ts) {
+                    if (!start) start = ts;
+                    const progress = Math.min((ts - start) / DURATION, 1);
+                    const t = (ts - start) / 1000;
+
+                    const bgAlpha = progress < 0.12 ? progress / 0.12 * 0.35 : 0.35;
+                    ctx.fillStyle = `rgba(2, 8, 14, ${bgAlpha})`;
+                    ctx.fillRect(0, 0, W, H);
+
+                    ctx.strokeStyle = 'rgba(94, 234, 212, 0.09)';
+                    ctx.lineWidth = 1;
+                    for (let x = 0; x < W; x += 56) {
+                        ctx.beginPath();
+                        ctx.moveTo(x, 0);
+                        ctx.lineTo(x, H);
+                        ctx.stroke();
+                    }
+                    for (let y = 0; y < H; y += 56) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, y);
+                        ctx.lineTo(W, y);
+                        ctx.stroke();
+                    }
+
+                    const reach = Math.min(W, H) * (0.08 + 0.5 * progress);
+                    nodes.forEach((n, i) => {
+                        const pulse = 0.5 + 0.5 * Math.sin(t * 3.4 + n.phase);
+                        if (Math.hypot(n.x - cx, n.y - cy) < reach) {
+                            ctx.beginPath();
+                            ctx.moveTo(cx, cy);
+                            ctx.lineTo(n.x, n.y);
+                            ctx.strokeStyle = `rgba(94, 234, 212, ${0.06 + pulse * 0.22})`;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+
+                        ctx.beginPath();
+                        ctx.arc(n.x, n.y, n.r + pulse * 1.2, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(94, 234, 212, ${0.16 + pulse * 0.5})`;
+                        ctx.fill();
+                    });
+
+                    const panelAlpha = Math.min(1, progress * 2.4);
+                    drawPanel(24, 26, 220, 56, 'AGENT MODE', 'ENABLED', panelAlpha);
+                    drawPanel(W - 254, 26, 230, 56, 'SIGNAL QUALITY', `${Math.round(87 + 12 * Math.sin(t * 2))}%`, panelAlpha);
+                    drawPanel(24, H - 92, 260, 56, 'CONTEXT WINDOW', `${Math.round(16 + 12 * progress)}K TOKENS`, panelAlpha);
+                    drawPanel(W - 304, H - 92, 280, 56, 'ROUTE', 'MODULE 09 -> AI AGENT', panelAlpha);
+
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = `rgba(211, 253, 244, ${Math.min(1, progress * 2)})`;
+                    ctx.font = '700 34px "Orbitron", sans-serif';
+                    ctx.fillText('AGENT-FRIENDLY', cx, cy - 8);
+                    ctx.font = '12px "JetBrains Mono", monospace';
+                    ctx.fillStyle = `rgba(94, 234, 212, ${Math.min(1, progress * 2)})`;
+                    ctx.fillText('READABLE SIGNALS · CLEAN TRANSITION', cx, cy + 24);
+                    ctx.restore();
+
+                    if (progress > 0.82) {
+                        const fade = (progress - 0.82) / 0.18;
+                        ctx.fillStyle = `rgba(2, 8, 14, ${fade * 0.98})`;
+                        ctx.fillRect(0, 0, W, H);
+                    }
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        overlayEl.style.opacity = '0';
+                        overlayEl.classList.remove('is-active');
+                        overlayEl.setAttribute('aria-hidden', 'true');
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            function selectAnimation(id, withAnimation) {
+                const data = animations[id];
+                if (!data) return;
+
+                setActiveButton(id);
+                desc.textContent = data.description;
+
+                if (id.startsWith('bushido-')) {
+                    if (withAnimation && data.bushido) {
+                        playBushidoOverlay(data.bushido);
+                    }
+                    return;
+                }
+
+                if (id === 'monkeys') {
+                    if (withAnimation) playMonkeyAnimation();
+                    return;
+                }
+
+                if (id === 'elephant') {
+                    if (withAnimation) playElephantAnimation();
+                    return;
+                }
+
+                if (id === 'galaxy') {
+                    if (withAnimation) playGalaxyAnimation();
+                    return;
+                }
+
+                if (id === 'charts') {
+                    if (withAnimation) playChartsAnimation();
+                    return;
+                }
+
+                if (id === 'agent-friendly') {
+                    if (withAnimation) playAgentFriendlyAnimation();
+                    return;
+                }
+
+                if (window.Transitions && typeof window.Transitions.play === 'function') {
+                    const color = zoneColors[id] || '#7dd3fc';
+                    if (withAnimation) {
+                        window.Transitions.play(id, color, () => {});
+                    }
+                }
+            }
+
+            buttons.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    selectAnimation(btn.dataset.anim, true);
+                });
+            });
+
+            selectAnimation('misc', false);
+        })();
+    </script>
+</body>
+</html>

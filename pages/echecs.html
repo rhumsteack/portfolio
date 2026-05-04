@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Échecs — Portfolio</title>
+    <meta name="description" content="Entre plaisir du jeu et lecture stratégique, découvrez ma page échecs et affrontez mon bot local.">
+    <meta property="og:title" content="Échecs — Portfolio">
+    <meta property="og:description" content="Entre plaisir du jeu et lecture stratégique, découvrez ma page échecs et affrontez mon bot local.">
+    <meta property="og:image" content="../Images/Accueil/scouterDBZ.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="../vendor/chessboard/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="../css/page.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <style>
+        .challenge-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 1.45fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .challenge-card {
+            background: linear-gradient(180deg, rgba(12, 21, 36, 0.92) 0%, rgba(8, 18, 38, 0.84) 100%);
+            border: 1px solid rgba(250, 204, 21, 0.14);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .challenge-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(250, 204, 21, 0.06) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(250, 204, 21, 0.04) 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.22;
+            pointer-events: none;
+        }
+
+        .challenge-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .bot-card {
+            border-color: rgba(0, 212, 255, 0.22);
+            background:
+                radial-gradient(circle at top right, rgba(0, 212, 255, 0.12), transparent 32%),
+                linear-gradient(180deg, rgba(8, 24, 44, 0.97) 0%, rgba(6, 16, 31, 0.96) 100%);
+            box-shadow:
+                inset 0 0 0 1px rgba(0, 212, 255, 0.08),
+                0 0 26px rgba(0, 212, 255, 0.08);
+        }
+
+        .bot-card::after {
+            background:
+                linear-gradient(90deg, rgba(0, 212, 255, 0.09) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(0, 212, 255, 0.06) 1px, transparent 1px),
+                radial-gradient(circle at 18% 18%, rgba(0, 212, 255, 0.14), transparent 22%);
+            background-size: 26px 26px, 26px 26px, auto;
+            opacity: 0.32;
+        }
+
+        .bot-card .block-title,
+        .bot-card .block-title::after,
+        .bot-card .bot-status strong,
+        .bot-card .bot-meta strong,
+        .bot-card .bot-note strong,
+        .bot-card .challenge-link-title,
+        .bot-card .challenge-link-arrow {
+            color: #00d4ff;
+        }
+
+        .bot-card .block-title::after {
+            background: rgba(0, 212, 255, 0.18);
+        }
+
+        .bot-header-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            margin: 0.1rem 0 1rem;
+        }
+
+        .bot-chip {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            color: #8fe8ff;
+            padding: 0.28rem 0.55rem;
+            border: 1px solid rgba(0, 212, 255, 0.22);
+            background: rgba(0, 212, 255, 0.08);
+        }
+
+        .challenge-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            margin-top: 1.2rem;
+        }
+
+        .challenge-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.9rem;
+            padding: 0.95rem 1rem;
+            text-decoration: none;
+            border: 1px solid rgba(250, 204, 21, 0.22);
+            background: rgba(250, 204, 21, 0.06);
+            color: var(--color-bright);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        }
+
+        .challenge-link:hover {
+            transform: translateY(-2px);
+            border-color: rgba(250, 204, 21, 0.55);
+            background: rgba(250, 204, 21, 0.1);
+            box-shadow: 0 0 22px rgba(250, 204, 21, 0.15);
+        }
+
+        .challenge-link-label {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .challenge-link-title {
+            font-family: var(--font-title);
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+        }
+
+        .challenge-link-subtitle {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            color: var(--color-muted);
+        }
+
+        .challenge-link-arrow {
+            font-size: 1.15rem;
+            color: var(--accent);
+        }
+
+        .bot-shell {
+            display: grid;
+            grid-template-columns: minmax(280px, 420px) minmax(220px, 1fr);
+            gap: 1.25rem;
+            align-items: start;
+            margin-top: 1rem;
+        }
+
+        .board-stage {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        #bot-board {
+            width: 100%;
+            max-width: 420px;
+            padding: 0.8rem;
+            border: 1px solid rgba(0, 212, 255, 0.18);
+            background:
+                linear-gradient(135deg, rgba(0, 212, 255, 0.06), rgba(250, 204, 21, 0.04)),
+                rgba(3, 10, 21, 0.9);
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+                0 14px 36px rgba(0, 0, 0, 0.34),
+                0 0 24px rgba(0, 212, 255, 0.08);
+        }
+
+        #bot-board .board-b72b1 {
+            border: 1px solid rgba(0, 212, 255, 0.45);
+            box-shadow:
+                0 0 0 1px rgba(0, 212, 255, 0.2),
+                0 0 18px rgba(0, 212, 255, 0.2),
+                0 0 28px rgba(255, 82, 255, 0.1);
+        }
+
+        #bot-board .square-55d63 {
+            box-shadow: inset 0 0 0 1px rgba(0, 212, 255, 0.08);
+        }
+
+        #bot-board .white-1e1d7 {
+            background:
+                linear-gradient(145deg, #d8f8ff 0%, #bfe6ff 35%, #9ad1ff 100%) !important;
+        }
+
+        #bot-board .black-3c85d {
+            background:
+                linear-gradient(145deg, #101a34 0%, #19254a 42%, #251848 100%) !important;
+        }
+
+        #bot-board .highlight1-32417,
+        #bot-board .highlight2-9c5d2 {
+            box-shadow:
+                inset 0 0 0 3px rgba(0, 255, 213, 0.58),
+                inset 0 0 22px rgba(0, 255, 213, 0.22);
+        }
+
+        #bot-board img.piece-417db {
+            transition: filter 0.25s ease;
+        }
+
+        #bot-board img.piece-417db[src*="/w"] {
+            filter:
+                drop-shadow(0 0 5px rgba(0, 212, 255, 0.9))
+                drop-shadow(0 0 10px rgba(0, 212, 255, 0.55))
+                drop-shadow(0 0 18px rgba(0, 212, 255, 0.3));
+        }
+
+        #bot-board img.piece-417db[src*="/b"] {
+            filter:
+                drop-shadow(0 0 5px rgba(255, 80, 220, 0.9))
+                drop-shadow(0 0 10px rgba(255, 80, 220, 0.55))
+                drop-shadow(0 0 18px rgba(255, 80, 220, 0.3));
+        }
+
+        .bot-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .bot-button {
+            border: 1px solid rgba(0, 212, 255, 0.24);
+            background: rgba(0, 212, 255, 0.08);
+            color: var(--color-bright);
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.09em;
+            padding: 0.7rem 0.9rem;
+            cursor: pointer;
+            transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        }
+
+        .bot-button:hover {
+            transform: translateY(-1px);
+            border-color: rgba(0, 212, 255, 0.58);
+            background: rgba(0, 212, 255, 0.14);
+        }
+
+        .bot-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-height: 100%;
+        }
+
+        .bot-status,
+        .bot-meta,
+        .bot-note {
+            padding: 1rem;
+            border: 1px solid rgba(0, 212, 255, 0.12);
+            background: linear-gradient(180deg, rgba(9, 21, 37, 0.86), rgba(8, 18, 31, 0.58));
+        }
+
+        .bot-status strong,
+        .bot-meta strong,
+        .bot-note strong {
+            display: block;
+            margin-bottom: 0.35rem;
+            font-family: var(--font-title);
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+        }
+
+        .bot-status p,
+        .bot-meta p,
+        .bot-note p {
+            font-size: 0.82rem;
+            color: var(--color-text);
+        }
+
+        #bot-last-move {
+            color: var(--color-muted);
+        }
+
+        .bot-status p,
+        .bot-meta p,
+        .bot-note p {
+            color: #d4e7f2;
+        }
+
+        @media (max-width: 980px) {
+            .challenge-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bot-shell {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="theme-echecs">
+
+    <a class="skip-link" href="#main-content">Aller au contenu principal</a>
+
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <nav class="page-nav">
+        <a href="../index.html" class="nav-back">
+            <span class="nav-back-arrow">←</span>
+            RETOUR
+        </a>
+        <span class="nav-title">PORTFOLIO</span>
+        <span class="nav-tag">STRATEGIE</span>
+    </nav>
+
+    <header class="section-hero">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <span class="section-eyebrow">// MODULE_06</span>
+        <h1 class="section-title">ÉCH<span>ECS</span></h1>
+        <p class="section-subtitle">
+            Lire la position, préparer un plan, puis ajuster au bon moment.
+        </p>
+    </header>
+
+    <main id="main-content" class="section-content">
+        <div class="content-block">
+            <h2 class="block-title">POURQUOI J'AIME LES ÉCHECS ?</h2>
+            <div class="block-body">
+                <p>
+                    J'aime tous les jeux de société en général, ils ont pour beaucoup participé au développement de mon envie d'apprendre et de comprendre.
+                    Les échecs sont cependant un jeu à part puisque à mon sens, meilleur on est et le moins il s'agit d'un jeu.
+                </p>
+                <p>
+                    Dans ma vie il y a eu des périodes avec ce jeu et des périodes sans, de manière quasi cyclique. À l'âge adulte, j'ai essayé de m'y consacrer sérieusement, mais la charge de travail et l'éloignement que cela produit vis-à-vis de la notion de jeu m'ont rapidement rappelé que l'essentiel est de garder le plaisir intact.
+                    Je reste suffisamment mauvais pour m'y amuser pleinement, et suffisamment bon pour comprendre au moins un peu ce que je fais.
+                </p>
+            </div>
+        </div>
+
+        <div class="challenge-grid">
+            <div class="content-block challenge-card">
+                <h2 class="block-title">DÉFIEZ-MOI !</h2>
+                <div class="block-body">
+                    <p>
+                        Si vous voulez une vraie partie, le plus simple reste encore de me retrouver sur Lichess.
+                    </p>
+                </div>
+                <div class="challenge-actions">
+                    <a class="challenge-link" href="https://lichess.org/@/rhumsteack" target="_blank" rel="noopener noreferrer">
+                        <span class="challenge-link-label">
+                            <span class="challenge-link-title">Mon compte Lichess</span>
+                            <span class="challenge-link-subtitle">@rhumsteack</span>
+                        </span>
+                        <span class="challenge-link-arrow" aria-hidden="true">↗</span>
+                    </a>
+
+                </div>
+            </div>
+
+            <div class="content-block challenge-card bot-card">
+                <h2 class="block-title">DÉFIEZ MON BOT</h2>
+                <div class="bot-header-strip">
+                    <span class="bot-chip">BOT_LOCAL</span>
+                    <span class="bot-chip">MODE_ANALYSE</span>
+                    <span class="bot-chip">NIVEAU_RENFORCÉ</span>
+                </div>
+                <div class="bot-shell">
+                    <div class="board-stage">
+                        <div id="bot-board" aria-label="Échiquier interactif contre le bot"></div>
+                        <div class="bot-controls">
+                            <button id="bot-new-game" class="bot-button" type="button">NOUVELLE PARTIE</button>
+                            <button id="bot-switch-side" class="bot-button" type="button">CHANGER DE COULEUR</button>
+                        </div>
+                    </div>
+
+                    <div class="bot-panel">
+                        <div class="bot-status">
+                            <strong>ÉTAT DE LA PARTIE</strong>
+                            <p id="bot-status-text">Initialisation du bot...</p>
+                        </div>
+                        <div class="bot-meta">
+                            <strong>DERNIER COUP</strong>
+                            <p id="bot-last-move">Aucun coup joué pour le moment.</p>
+                        </div>
+                        <div class="bot-note">
+                            <strong>NOTE</strong>
+                            <p>
+                                Le niveau n'est pas officiellement coté : il s'agit d'un bot local à recherche alpha-beta, avec ordonnancement des coups et profondeur adaptée à la complexité de la position.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="section-footer">
+        <a href="../index.html">← RETOUR AU PORTFOLIO</a>
+        <a href="https://www.linkedin.com/in/romain-orhand-72410a13b/" target="_blank" rel="noopener noreferrer">CONTACT LINKEDIN ↗</a>
+    </footer>
+
+    <script src="../vendor/jquery/jquery-3.7.1.min.js"></script>
+    <script src="../vendor/chess/chess.min.js"></script>
+    <script src="../vendor/chessboard/chessboard-1.0.0.min.js"></script>
+    <script src="../js/circuit.js"></script>
+    <script src="../js/page.js"></script>
+    <script>
+        window.HeroAnim = {
+            start(canvas) {
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                const W = canvas.width;
+                const H = canvas.height;
+                const cell = 36;
+                let t = 0;
+
+                function draw() {
+                    ctx.fillStyle = 'rgba(5,10,19,0.11)';
+                    ctx.fillRect(0, 0, W, H);
+
+                    for (let y = 0; y < H + cell; y += cell) {
+                        for (let x = 0; x < W + cell; x += cell) {
+                            const dark = ((x / cell + y / cell) % 2) === 0;
+                            const pulse = 0.4 + 0.6 * (Math.sin(t + (x + y) * 0.015) + 1) / 2;
+                            const alpha = (dark ? 0.14 : 0.05) * pulse;
+                            ctx.fillStyle = `rgba(250,204,21,${alpha})`;
+                            ctx.fillRect(x, y, cell - 1, cell - 1);
+                        }
+                    }
+
+                    t += 0.03;
+                    requestAnimationFrame(draw);
+                }
+
+                draw();
+            }
+        };
+
+        (function () {
+            const boardEl = document.getElementById('bot-board');
+            (function () {
+                var boardEl = document.getElementById('bot-board');
+                var statusEl = document.getElementById('bot-status-text');
+                var lastMoveEl = document.getElementById('bot-last-move');
+                var newGameBtn = document.getElementById('bot-new-game');
+                var switchSideBtn = document.getElementById('bot-switch-side');
+
+                if (!boardEl || typeof Chess === 'undefined' || typeof Chessboard === 'undefined') {
+                    if (statusEl) statusEl.textContent = 'Le module interactif n\'a pas pu être chargé.';
+                    return;
+                }
+
+                var game = new Chess();
+                var playerColor = 'white';
+                var board = null;
+                var botWorker = null;
+                var gameStarted = false;
+
+                function updateStatus() {
+                    if (game.in_checkmate()) {
+                        statusEl.textContent = game.turn() === 'w' ? 'Échec et mat : les noirs gagnent.' : 'Échec et mat : les blancs gagnent.';
+                        gameStarted = false;
+                        switchSideBtn.disabled = false;
+                        return;
+                    }
+                    if (game.in_draw() || game.in_stalemate() || game.in_threefold_repetition()) {
+                        statusEl.textContent = 'Partie nulle.';
+                        gameStarted = false;
+                        switchSideBtn.disabled = false;
+                        return;
+                    }
+                    var turn = game.turn() === 'w' ? 'Blancs' : 'Noirs';
+                    var isPlayerTurn = game.turn() === (playerColor === 'white' ? 'w' : 'b');
+                    var check = game.in_check() ? ' Échec !' : '';
+                    statusEl.textContent = turn + ' au trait. ' + (isPlayerTurn ? 'À vous de jouer.' : 'Le bot réfléchit...') + check;
+                }
+
+                function recordMove(move, source) {
+                    if (!move) return;
+                    lastMoveEl.textContent = source + ' : ' + move.from + '-' + move.to + (move.promotion ? '=' + move.promotion.toUpperCase() : '');
+                }
+
+                function makeBotMove() {
+                    if (!gameStarted || game.game_over()) return;
+                    updateStatus();
+                    if (botWorker) { botWorker.terminate(); botWorker = null; }
+                    botWorker = new Worker('../js/chess-worker.js');
+                    botWorker.onmessage = function (e) {
+                        botWorker.terminate();
+                        botWorker = null;
+                        if (!gameStarted) return;
+                        var san = e.data;
+                        if (!san) return;
+                        var move = game.move(san);
+                        if (!move) return;
+                        board.position(game.fen());
+                        recordMove(move, 'Bot');
+                        updateStatus();
+                    };
+                    botWorker.postMessage({ fen: game.fen(), botIsWhite: playerColor === 'black' });
+                }
+
+                function onDragStart(source, piece) {
+                    if (!gameStarted || game.game_over() || botWorker) return false;
+                    var playerTurn = playerColor === 'white' ? 'w' : 'b';
+                    if (game.turn() !== playerTurn) return false;
+                    if (playerColor === 'white' && piece.search(/^b/) !== -1) return false;
+                    if (playerColor === 'black' && piece.search(/^w/) !== -1) return false;
+                    return true;
+                }
+
+                function onDrop(source, target) {
+                    var move = game.move({ from: source, to: target, promotion: 'q' });
+                    if (!move) return 'snapback';
+                    recordMove(move, 'Vous');
+                    updateStatus();
+                    if (!game.game_over()) window.setTimeout(makeBotMove, 300);
+                    return undefined;
+                }
+
+                function onSnapEnd() {
+                    board.position(game.fen());
+                }
+
+                function resetGame(color) {
+                    if (botWorker) { botWorker.terminate(); botWorker = null; }
+                    gameStarted = true;
+                    playerColor = color || playerColor;
+                    game.reset();
+                    board.orientation(playerColor);
+                    board.position('start');
+                    lastMoveEl.textContent = 'Aucun coup joué pour le moment.';
+                    switchSideBtn.disabled = true;
+                    updateStatus();
+                    if (playerColor === 'black') window.setTimeout(makeBotMove, 300);
+                }
+
+                board = Chessboard('bot-board', {
+                    draggable: true,
+                    position: 'start',
+                    onDragStart: onDragStart,
+                    onDrop: onDrop,
+                    onSnapEnd: onSnapEnd,
+                    pieceTheme: '../vendor/chessboard/alpha/{piece}.png',
+                });
+
+                newGameBtn.addEventListener('click', function () { resetGame(playerColor); });
+                switchSideBtn.addEventListener('click', function () {
+                    playerColor = playerColor === 'white' ? 'black' : 'white';
+                    board.orientation(playerColor);
+                });
+
+                updateStatus();
+            })();
+        })();
+    </script>
+</body>
+</html>

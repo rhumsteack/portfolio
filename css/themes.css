@@ -1,0 +1,64 @@
+/* Centralized per-page accent themes */
+
+body.theme-qualite {
+    --accent: #00d4ff;
+    --accent-dim: rgba(0, 212, 255, 0.15);
+    --accent-glow: rgba(0, 212, 255, 0.45);
+    --accent-rgb: 0, 212, 255;
+}
+
+body.theme-ia {
+    --accent: #ff0080;
+    --accent-dim: rgba(255, 0, 128, 0.15);
+    --accent-glow: rgba(255, 0, 128, 0.45);
+    --accent-rgb: 255, 0, 128;
+}
+
+body.theme-robotique {
+    --accent: #a855f7;
+    --accent-dim: rgba(168, 85, 247, 0.15);
+    --accent-glow: rgba(168, 85, 247, 0.45);
+    --accent-rgb: 168, 85, 247;
+}
+
+body.theme-aventure {
+    --accent: #00ff88;
+    --accent-dim: rgba(0, 255, 136, 0.15);
+    --accent-glow: rgba(0, 255, 136, 0.45);
+    --accent-rgb: 0, 255, 136;
+}
+
+body.theme-iaido {
+    --accent: #ff3366;
+    --accent-dim: rgba(255, 51, 102, 0.15);
+    --accent-glow: rgba(255, 51, 102, 0.45);
+    --accent-rgb: 255, 51, 102;
+}
+
+body.theme-echecs {
+    --accent: #facc15;
+    --accent-dim: rgba(250, 204, 21, 0.15);
+    --accent-glow: rgba(250, 204, 21, 0.45);
+    --accent-rgb: 250, 204, 21;
+}
+
+body.theme-dessin {
+    --accent: #ff9f43;
+    --accent-dim: rgba(255, 159, 67, 0.15);
+    --accent-glow: rgba(255, 159, 67, 0.45);
+    --accent-rgb: 255, 159, 67;
+}
+
+body.theme-misc {
+    --accent: #7dd3fc;
+    --accent-dim: rgba(125, 211, 252, 0.15);
+    --accent-glow: rgba(125, 211, 252, 0.45);
+    --accent-rgb: 125, 211, 252;
+}
+
+body.theme-agent {
+    --accent: #5eead4;
+    --accent-dim: rgba(94, 234, 212, 0.16);
+    --accent-glow: rgba(94, 234, 212, 0.45);
+    --accent-rgb: 94, 234, 212;
+}

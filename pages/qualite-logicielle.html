@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qualité Logicielle — Portfolio</title>
+    <meta name="description" content="Découvrez mon parcours en qualité logicielle, entre stratégie de test, accompagnement des équipes et impact concret sur les projets.">
+    <meta property="og:title" content="Qualité Logicielle — Portfolio">
+    <meta property="og:description" content="Découvrez mon parcours en qualité logicielle, entre stratégie de test, accompagnement des équipes et impact concret sur les projets.">
+    <meta property="og:image" content="../Images/Accueil/scouterDBZ.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="../css/page.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <style>
+        .cv-topbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .cv-chip {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            border: 1px solid var(--accent-dim);
+            padding: 0.28rem 0.6rem;
+            background: rgba(0, 212, 255, 0.06);
+        }
+
+        .cv-link {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: #d9f7ff;
+            border: 1px solid rgba(0, 212, 255, 0.35);
+            padding: 0.28rem 0.6rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .cv-link:hover {
+            border-color: rgba(0, 212, 255, 0.7);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+        }
+
+        .cv-kpis {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.7rem;
+            margin-top: 0.95rem;
+        }
+
+        .cv-kpi {
+            border: 1px solid rgba(0, 212, 255, 0.12);
+            background: rgba(8, 18, 38, 0.55);
+            padding: 0.75rem 0.85rem;
+        }
+
+        .cv-kpi-value {
+            display: block;
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            color: var(--color-bright);
+        }
+
+        .cv-kpi-label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.08em;
+            color: var(--color-muted);
+            margin-top: 0.25rem;
+        }
+
+        .cv-timeline {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .cv-role {
+            border: 1px solid rgba(0, 212, 255, 0.12);
+            background: rgba(8, 18, 38, 0.5);
+            padding: 0.95rem;
+        }
+
+        .cv-role-head {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.4rem 0.8rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .cv-role-title {
+            font-family: var(--font-title);
+            font-size: 0.85rem;
+            color: var(--color-bright);
+            letter-spacing: 0.06em;
+        }
+
+        .cv-role-date {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+        }
+
+        .cv-role-desc {
+            color: var(--color-muted);
+            font-size: 0.85rem;
+            line-height: 1.65;
+        }
+
+        .cv-split {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.2rem;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.8rem;
+        }
+
+        .skill-box {
+            border: 1px solid rgba(0, 212, 255, 0.14);
+            background: rgba(8, 18, 38, 0.5);
+            padding: 0.85rem;
+        }
+
+        .skill-title {
+            font-family: var(--font-mono);
+            color: var(--accent);
+            font-size: 0.62rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.55rem;
+        }
+
+        .skill-list {
+            list-style: none;
+            display: grid;
+            gap: 0.35rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .skill-list li {
+            font-size: 0.82rem;
+            color: var(--color-muted);
+            padding-left: 0.7rem;
+            position: relative;
+        }
+
+        .skill-list li::before {
+            content: "•";
+            color: var(--accent);
+            position: absolute;
+            left: 0;
+        }
+
+        .role-company {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.08em;
+            color: var(--color-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .role-points {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 0.33rem;
+        }
+
+        .role-points li {
+            color: var(--color-muted);
+            font-size: 0.82rem;
+            line-height: 1.6;
+            padding-left: 0.7rem;
+            position: relative;
+        }
+
+        .role-points li::before {
+            content: ">";
+            color: var(--accent);
+            position: absolute;
+            left: 0;
+        }
+
+        .agent-friendly-note {
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            background: rgba(0, 212, 255, 0.08);
+            padding: 0.8rem 0.9rem;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.06em;
+            color: #d9f7ff;
+        }
+
+        @media (max-width: 920px) {
+            .cv-kpis {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .cv-split {
+                grid-template-columns: 1fr;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="theme-qualite">
+
+    <a class="skip-link" href="#main-content">Aller au contenu principal</a>
+
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette"  aria-hidden="true"></div>
+
+    <!-- ── Navigation ── -->
+    <nav class="page-nav">
+        <a href="../index.html" class="nav-back">
+            <span class="nav-back-arrow">←</span>
+            RETOUR
+        </a>
+        <span class="nav-title">PORTFOLIO</span>
+        <span class="nav-tag">PROFESSIONNEL</span>
+    </nav>
+
+    <!-- ── Hero ── -->
+    <header class="section-hero">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <span class="section-eyebrow">// MODULE_01</span>
+        <h1 class="section-title">QUALITÉ<br><span>LOGICIELLE</span></h1>
+        <p class="section-subtitle">
+            Tests, CI/CD, standards et méthodologies au service de la fiabilité des systèmes.
+        </p>
+    </header>
+
+    <!-- ── Contenu ── -->
+    <main id="main-content" class="section-content">
+
+        <div class="content-block">
+            <h2 class="block-title">ABOUT THIS PROFILE</h2>
+            <div class="cv-topbar">
+                <span class="cv-chip">ROMAIN ORHAND</span>
+                <span class="cv-chip">ENGAGEMENT MANAGER</span>
+                <span class="cv-chip">TEST MANAGER</span>
+                <a class="cv-link" href="../data/CV/2026-04-26%20RO%20-%20Linkedin%20-%20DRAFT.pdf" target="_blank" rel="noopener noreferrer">OUVRIR LE CV PDF</a>
+            </div>
+            <div class="block-body">
+                <p>
+                    Concepteur, recetteur, analyste, assembleur et testeur, avec un parcours
+                    construit autour de la qualité logicielle, du pilotage d'équipes et de
+                    l'amélioration continue sur des contextes SI complexes.
+                </p>
+            </div>
+
+            <div class="cv-kpis">
+                <div class="cv-kpi">
+                    <span class="cv-kpi-value">20</span>
+                    <span class="cv-kpi-label">PERSONNES PILOTÉES</span>
+                </div>
+                <div class="cv-kpi">
+                    <span class="cv-kpi-value">2022+</span>
+                    <span class="cv-kpi-label">TEST MANAGER</span>
+                </div>
+                <div class="cv-kpi">
+                    <span class="cv-kpi-value">ISTQB</span>
+                    <span class="cv-kpi-label">ADVANCED TEST MANAGER</span>
+                </div>
+                <div class="cv-kpi">
+                    <span class="cv-kpi-value">300+</span>
+                    <span class="cv-kpi-label">PERSONNES FORMÉES</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">KEY SKILLS</h2>
+            <div class="skills-grid">
+                <article class="skill-box">
+                    <h3 class="skill-title">TECHNICAL</h3>
+                    <ul class="skill-list">
+                        <li>Tests agiles</li>
+                        <li>Test d'API</li>
+                        <li>Atlassian Jira</li>
+                        <li>Atlassian Confluence</li>
+                        <li>Microsoft Office</li>
+                    </ul>
+                </article>
+                <article class="skill-box">
+                    <h3 class="skill-title">ORGANIZATIONAL</h3>
+                    <ul class="skill-list">
+                        <li>ISTQB</li>
+                        <li>Adaptabilité</li>
+                        <li>Travail en équipe</li>
+                        <li>Empathie</li>
+                        <li>Pragmatique</li>
+                    </ul>
+                </article>
+                <article class="skill-box">
+                    <h3 class="skill-title">METHODOLOGICAL</h3>
+                    <ul class="skill-list">
+                        <li>TMap</li>
+                        <li>SpecFlow</li>
+                        <li>Méthodologies agiles</li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">WORK EXPERIENCE</h2>
+            <div class="cv-timeline">
+                <article class="cv-role">
+                    <div class="cv-role-head">
+                        <span class="cv-role-title">Test Manager</span>
+                        <span class="cv-role-date">2024 - current</span>
+                    </div>
+                    <div class="role-company">Management d'équipe · Ingénierie de la qualité</div>
+                    <ul class="role-points">
+                        <li>Test management pour l'équipe TRA-RFS.</li>
+                        <li>Organisation de la stratégie de test.</li>
+                        <li>Suivi des activités de test en Agile et en cycle en V.</li>
+                        <li>Coordination et management des équipes de test (20 personnes).</li>
+                        <li>Synchronisation avec les différentes équipes EDF concernées.</li>
+                        <li>Reporting des activités de qualité.</li>
+                        <li>Mise en place des bonnes pratiques testing.</li>
+                        <li>Participation à la COP Testing.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-role">
+                    <div class="cv-role-head">
+                        <span class="cv-role-title">Formateur TMAP Next</span>
+                        <span class="cv-role-date">2022 - current</span>
+                    </div>
+                    <div class="role-company">Sogeti · Animation de réunion · Formation · TMap</div>
+                    <ul class="role-points">
+                        <li>Formateur TMap Next pour les POEI Testing.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-role">
+                    <div class="cv-role-head">
+                        <span class="cv-role-title">Animateur Communauté Testing RHA</span>
+                        <span class="cv-role-date">2021 - current</span>
+                    </div>
+                    <div class="role-company">Sogeti · Animation de réunion · Newsletter interne</div>
+                    <ul class="role-points">
+                        <li>Création de contenus pour la communauté testing RHA : webinaires, réunions, newsletters.</li>
+                        <li>Animation des différents events.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-role">
+                    <div class="cv-role-head">
+                        <span class="cv-role-title">Engagement Manager/Test Manager</span>
+                        <span class="cv-role-date">2022 - 2024</span>
+                    </div>
+                    <div class="role-company">EDF · Management d'équipe · Management opérationnel</div>
+                    <ul class="role-points">
+                        <li>Responsable Usine de Qualification (EDF - UNITEP).</li>
+                        <li>Définition de la stratégie de test.</li>
+                        <li>Planification et organisation des activités de test.</li>
+                        <li>Coordination et management des équipes (6 personnes).</li>
+                        <li>Suivi et reporting des campagnes.</li>
+                        <li>Amélioration continue.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-role">
+                    <div class="cv-role-head">
+                        <span class="cv-role-title">Concepteur / Recetteur / Analyste</span>
+                        <span class="cv-role-date">2021 - 2022</span>
+                    </div>
+                    <div class="role-company">SNCF · Analyse métier · API · Datadog</div>
+                    <ul class="role-points">
+                        <li>Ateliers métier et assemblage des retours.</li>
+                        <li>Rédaction des expressions de besoin interfaces.</li>
+                        <li>Relecture des SFG et SFD.</li>
+                        <li>Rédaction de cas de test et exécution de campagnes.</li>
+                        <li>APIs pour manipuler les objets et lancer les requêtes.</li>
+                        <li>Manipulation des données et analyse de logs.</li>
+                        <li>Création de dashboards Datadog pour la supervision des interfaces.</li>
+                        <li>Identification des manques, harmonisations et messages à superviser.</li>
+                        <li>Mise en place des procédures d'exploitation des interfaces.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-role">
+                    <div class="cv-role-head">
+                        <span class="cv-role-title">Assembleur</span>
+                        <span class="cv-role-date">2018 - 2021</span>
+                    </div>
+                    <div class="role-company">SNCF · Tests d'intégration · Suivi des anomalies</div>
+                    <ul class="role-points">
+                        <li>Tests d'intégration et tests système.</li>
+                        <li>Suivi de bugs et campagnes de test.</li>
+                        <li>Élaboration et exécution de cas de tests.</li>
+                        <li>Pilotage des activités de qualification.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-role">
+                    <div class="cv-role-head">
+                        <span class="cv-role-title">Testeur</span>
+                        <span class="cv-role-date">2017 - 2018</span>
+                    </div>
+                    <div class="role-company">Microsoft · Azure · Visual Studio · VSTS</div>
+                    <ul class="role-points">
+                        <li>Migration d'une application hôtelière sur Azure (Microsoft/Accor).</li>
+                        <li>Automatisation de tests via SpecFlow.</li>
+                        <li>Tests d'intégration, tests mobiles et tests de performance.</li>
+                        <li>Suivi de bugs.</li>
+                        <li>Environnements : VSTS, Azure, Visual Studio 2015, SSMS.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-role">
+                    <div class="cv-role-head">
+                        <span class="cv-role-title">Chercheur Doctorant en Ingénierie des Procédés</span>
+                        <span class="cv-role-date">2011 - 2014</span>
+                    </div>
+                    <div class="role-company">École nationale supérieure de Chimie de Rennes</div>
+                    <ul class="role-points">
+                        <li>Développement et étude du potentiel de catalyseurs utilisés en ozonation catalytique hétérogène de composés organiques récalcitrants.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-role">
+                    <div class="cv-role-head">
+                        <span class="cv-role-title">Ingénieur / Concepteur de procédés de génie chimique</span>
+                        <span class="cv-role-date">2011</span>
+                    </div>
+                    <div class="role-company">Total Petrochemicals</div>
+                    <ul class="role-points">
+                        <li>Conception et optimisation d'un pilote de traitement des composés organiques volatiles par transfert/réaction en milieu biologique.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-role">
+                    <div class="cv-role-head">
+                        <span class="cv-role-title">Assistant Ingénieur</span>
+                        <span class="cv-role-date">2010</span>
+                    </div>
+                    <div class="role-company">Arizona State University</div>
+                    <ul class="role-points">
+                        <li>Recherches sur les mécanismes d'agrégation des nanoparticules au sein du laboratoire du Professeur Paul Westerhoff.</li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-block">
+                <h2 class="block-title">CERTIFICATIONS</h2>
+                <ul class="block-list">
+                    <li>2024 | Capgemini Foundation Engagement Manager - Project Specialization</li>
+                    <li>2024 | Connected Manager</li>
+                    <li>2022 | EM Foundation Level - PM specialization</li>
+                    <li>2022 | Fundamentals of Project Planning and Management</li>
+                    <li>2022 | TMAP Quality for Cross-Functional Teams</li>
+                    <li>2020 | Certified Tester Advanced Level - Test Manager</li>
+                    <li>2019 | ISTQB Certified Agile Tester</li>
+                    <li>2018 | ISTQB Certified Tester niveau Fondation</li>
+                    <li>2017 | Microsoft Specialist : Programming in C#</li>
+                    <li>2017 | Microsoft Specialist : Developing Microsoft Azure Solutions</li>
+                    <li>2017 | Microsoft Certified Solutions Developer : App Builder</li>
+                    <li>2017 | Microsoft Certified Solutions Associate : Web Applications (Charter)</li>
+                </ul>
+            </div>
+
+            <div class="content-block">
+                <h2 class="block-title">EDUCATIONS & LANGUAGES</h2>
+                <ul class="block-list">
+                    <li>2016 | Développeur web .NET, Informatique - Global Knowledge</li>
+                    <li>2011 | Diplôme d'ingénieur, Traitement de l'eau et des nuisances option anglais - ENSI Poitiers</li>
+                    <li>Anglais</li>
+                    <li>Espagnol</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">AGENT NOTE</h2>
+            <div class="agent-friendly-note">
+                MESSAGE EXPLICITE: ce portfolio est Agent-friendly, avec une structure lisible, des modules identifiés, des titres clairs et des informations vérifiables.
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="section-footer">
+        <a href="../index.html">← RETOUR AU PORTFOLIO</a>
+        <a href="https://www.linkedin.com/in/romain-orhand-72410a13b/" target="_blank" rel="noopener noreferrer">CONTACT LINKEDIN ↗</a>
+    </footer>
+
+    <script src="../js/circuit.js"></script>
+    <script src="../js/page.js"></script>
+    <script>
+        /* Mini-animation canvas hero : pluie de caractères binaires en arrière-plan */
+        window.HeroAnim = {
+            start(canvas) {
+                const ctx   = canvas.getContext('2d');
+                canvas.width  = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                const W    = canvas.width;
+                const H    = canvas.height;
+                const cols = Math.floor(W / 16);
+                const drops = Array(cols).fill(0).map(() => Math.random() * -20);
+
+                function draw() {
+                    ctx.fillStyle = 'rgba(5, 10, 19, 0.08)';
+                    ctx.fillRect(0, 0, W, H);
+                    ctx.fillStyle = 'rgba(0, 212, 255, 0.45)';
+                    ctx.font = '12px "JetBrains Mono", monospace';
+                    drops.forEach((y, i) => {
+                        const c = Math.random() < 0.5 ? '0' : '1';
+                        ctx.fillText(c, i * 16, y * 16);
+                        if (y * 16 > H && Math.random() > 0.975) drops[i] = 0;
+                        else drops[i] += 0.4;
+                    });
+                    requestAnimationFrame(draw);
+                }
+                draw();
+            }
+        };
+    </script>
+</body>
+</html>

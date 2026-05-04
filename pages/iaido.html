@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iaïdo — Portfolio</title>
+    <meta name="description" content="Découvrez ma pratique de l’iaïdo, entre discipline, galerie photo et valeurs du bushido.">
+    <meta property="og:title" content="Iaïdo — Portfolio">
+    <meta property="og:description" content="Découvrez ma pratique de l’iaïdo, entre discipline, galerie photo et valeurs du bushido.">
+    <meta property="og:image" content="../Images/Iaïdo/MAR08161-optimized.jpg">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="../css/page.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <style>
+        .iaido-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .iaido-gallery-item {
+            border: 1px solid var(--accent-dim);
+            background: rgba(8, 18, 38, 0.72);
+            overflow: hidden;
+            aspect-ratio: 2 / 3;
+            content-visibility: auto;
+            contain-intrinsic-size: 320px;
+        }
+
+        .iaido-gallery-item img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .iaido-gallery-item:hover img {
+            transform: scale(1.03);
+        }
+
+        .bushido-intro {
+            margin-top: 0.3rem;
+            color: var(--color-muted);
+            font-size: 0.9rem;
+        }
+
+        .content-block.bushido-full {
+            grid-column: 1 / -1;
+        }
+
+        .bushido-selector {
+            margin-top: 1.1rem;
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 0.55rem;
+        }
+
+        .bushido-btn {
+            border: 1px solid var(--accent-dim);
+            background: rgba(8, 18, 38, 0.6);
+            color: var(--color-text);
+            padding: 0.65rem 0.45rem;
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease;
+            font-family: var(--font-mono);
+            min-height: 4.8rem;
+        }
+
+        .bushido-btn:hover,
+        .bushido-btn:focus-visible {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent-dim), 0 0 16px var(--accent-glow);
+            background: rgba(255, 51, 102, 0.1);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .bushido-btn.is-active {
+            border-color: var(--accent);
+            background: rgba(255, 51, 102, 0.16);
+            box-shadow: 0 0 0 1px var(--accent-dim), 0 0 18px var(--accent-glow);
+        }
+
+        .bushido-kanji-mini {
+            display: block;
+            font-size: 1.25rem;
+            line-height: 1;
+            color: var(--color-bright);
+            margin-bottom: 0.35rem;
+            font-family: "Yu Mincho", "Hiragino Mincho ProN", "MS Mincho", serif;
+        }
+
+        .bushido-label {
+            display: block;
+            font-size: 0.66rem;
+            letter-spacing: 0.08em;
+            color: var(--color-text);
+        }
+
+        .bushido-desc {
+            margin-top: 0.9rem;
+            border-left: 3px solid var(--accent);
+            background: rgba(8, 18, 38, 0.55);
+            padding: 0.9rem 1rem;
+            color: var(--color-muted);
+            min-height: 4.8rem;
+            line-height: 1.75;
+        }
+
+        .bushido-overlay {
+            --slash-angle: -17deg;
+            --slash-thickness: 4px;
+            --slash-core: 255, 51, 102;
+            --slash-glow: 255, 230, 230;
+            position: fixed;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle at center, rgba(10, 14, 24, 0.65) 0%, rgba(5, 10, 19, 0.9) 70%);
+            backdrop-filter: blur(2px);
+            z-index: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease;
+            overflow: hidden;
+        }
+
+        .bushido-overlay.is-active {
+            opacity: 1;
+        }
+
+        .bushido-overlay-kanji {
+            font-family: "Yu Mincho", "Hiragino Mincho ProN", "MS Mincho", serif;
+            font-size: clamp(5rem, 24vw, 18rem);
+            color: rgba(236, 245, 255, 0.92);
+            text-shadow: 0 0 18px rgba(255, 255, 255, 0.35), 0 0 40px var(--accent-glow);
+            line-height: 1;
+            opacity: 0;
+            transform: scale(0.82);
+        }
+
+        .bushido-overlay-title {
+            position: absolute;
+            bottom: 10vh;
+            font-family: var(--font-mono);
+            letter-spacing: 0.2em;
+            font-size: clamp(0.72rem, 1.7vw, 1rem);
+            color: rgba(232, 240, 254, 0.86);
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        .bushido-slash {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 160vmax;
+            height: var(--slash-thickness);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(var(--slash-glow), 0.96), rgba(var(--slash-core), 0.96), rgba(255, 255, 255, 0));
+            transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(0);
+            transform-origin: center;
+            opacity: 0;
+            filter: drop-shadow(0 0 10px rgba(var(--slash-glow), 0.75));
+        }
+
+        .bushido-overlay.is-active .bushido-overlay-kanji {
+            animation: bushido-kanji-in 1s ease forwards;
+        }
+
+        .bushido-overlay.is-active .bushido-overlay-title {
+            animation: bushido-title-in 0.7s 0.12s ease forwards;
+        }
+
+        .bushido-overlay.is-active .bushido-slash {
+            animation: bushido-slash-cut 0.52s 0.56s cubic-bezier(.12,.66,.18,1) forwards;
+        }
+
+        @keyframes bushido-kanji-in {
+            0%   { opacity: 0; transform: scale(0.82); }
+            35%  { opacity: 1; transform: scale(1); }
+            68%  { opacity: 1; transform: scale(1.02); }
+            100% { opacity: 0; transform: scale(1.06); }
+        }
+
+        @keyframes bushido-title-in {
+            0%   { opacity: 0; transform: translateY(12px); }
+            30%  { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-6px); }
+        }
+
+        @keyframes bushido-slash-cut {
+            0%   { opacity: 0; transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(0.06); }
+            12%  { opacity: 1; }
+            65%  { opacity: 1; transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--slash-angle)) scaleX(1.12); }
+        }
+
+        @media (max-width: 1120px) {
+            .bushido-selector {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .bushido-selector {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .bushido-btn {
+                min-height: 4.4rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bushido-btn {
+                transition: none;
+            }
+
+            .bushido-overlay {
+                transition: none;
+            }
+
+            .bushido-overlay.is-active .bushido-overlay-kanji,
+            .bushido-overlay.is-active .bushido-overlay-title,
+            .bushido-overlay.is-active .bushido-slash {
+                animation-duration: 0.01ms;
+                animation-iteration-count: 1;
+            }
+        }
+
+        @media (max-width: 980px) {
+            .iaido-gallery {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .iaido-gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="theme-iaido">
+
+    <a class="skip-link" href="#main-content">Aller au contenu principal</a>
+
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="vignette"  aria-hidden="true"></div>
+
+    <!-- ── Navigation ── -->
+    <nav class="page-nav">
+        <a href="../index.html" class="nav-back">
+            <span class="nav-back-arrow">←</span>
+            RETOUR
+        </a>
+        <span class="nav-title">PORTFOLIO</span>
+        <span class="nav-tag">ARTS MARTIAUX</span>
+    </nav>
+
+    <!-- ── Hero ── -->
+    <header class="section-hero">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <span class="section-eyebrow">// MODULE_05</span>
+        <h1 class="section-title">IAÏDO</h1>
+        <p class="section-subtitle">
+            L'art du sabre japonais — précision, présence et maîtrise de soi.
+        </p>
+    </header>
+
+    <!-- ── Contenu ── -->
+    <main id="main-content" class="section-content">
+
+        <div class="content-grid">
+            <div class="content-block">
+                <h2 class="block-title">L'ART</h2>
+                <div class="block-body">
+                    <p>
+                        Le Iaïdo (居合道) est un art martial japonais centré sur la maîtrise
+                        de l'extraction du sabre (katana) et l'exécution de coupes précises.
+                        Discipline silencieuse, elle cultive la concentration, la présence
+                        mentale et la justesse du geste.
+                    </p>
+                    <p>
+                        Etrangement, le iaïdo m'a plu alors qu'il s'agit d'une discipline très contraignante, 
+                        avec des mouvements codifiés et peu de place à l'expression personnelle.
+                        Mais cette contrainte n'est pas arbitraire et j'y trouve un sens qui me plait.
+                        De plus, contraindre mon corps est aussi une façon d'en prendre un contrôle plus fin, 
+                        et de me dépasser pour atteindre une forme d'excellence dans l'exécution.
+                    </p>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2 class="block-title">MA PRATIQUE</h2>
+                <ul class="block-list">
+                    <li>Grade actuel : 3e dan</li>
+                    <li>Club / Dojo : Sakura Lyon Iaïdo</li>
+                    <li>Axes de progression : posture, timing, précision du geste</li>
+                    <li>Bénéfices personnels : concentration, contrôle du corps et compréhension du mouvement</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2 class="block-title">GALERIE IAÏDO</h2>
+            <div class="iaido-gallery">
+                <figure class="iaido-gallery-item">
+                    <img src="../Images/Ia%C3%AFdo/MAR08161-optimized.jpg" width="900" height="1384" alt="Pratique de Iaïdo en dojo, posture de garde." loading="eager" fetchpriority="high" decoding="async">
+                </figure>
+                <figure class="iaido-gallery-item">
+                    <img src="../Images/Ia%C3%AFdo/MAR08176-optimized.jpg" width="900" height="1353" alt="Mouvement de coupe en Iaïdo lors d'une démonstration." loading="lazy" fetchpriority="low" decoding="async">
+                </figure>
+                <figure class="iaido-gallery-item">
+                    <img src="../Images/Ia%C3%AFdo/MAR08173-optimized.jpg" width="900" height="1350" alt="Séquence de kata au sabre pendant un entraînement de Iaïdo." loading="lazy" fetchpriority="low" decoding="async">
+                </figure>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-block">
+                <h2 class="block-title">COMPÉTITIONS & GRADES</h2>
+                <ul class="block-list">
+                    <li>Passage de grade : 3e dan</li>
+                    <li>Pratique régulière en dojo et stages techniques</li>
+                    <li>Préparation du CAF pour pouvoir devenir enseignant bénévole</li>
+                </ul>
+            </div>
+
+            <div class="content-block bushido-full">
+                <h2 class="block-title">LES 7 VALEURS DU BUSHIDO</h2>
+                <p class="bushido-intro">
+                    Sélectionne une valeur pour afficher son idéogramme et visualiser un coup de sabre.
+                </p>
+                <div class="bushido-selector" id="bushido-selector" role="listbox" aria-label="Sélecteur des valeurs du Bushido">
+                    <button type="button" class="bushido-btn" data-bushido="gi" aria-selected="false">
+                        <span class="bushido-kanji-mini">義</span>
+                        <span class="bushido-label">GI · RECTITUDE</span>
+                    </button>
+                    <button type="button" class="bushido-btn" data-bushido="yu" aria-selected="false">
+                        <span class="bushido-kanji-mini">勇</span>
+                        <span class="bushido-label">YU · COURAGE</span>
+                    </button>
+                    <button type="button" class="bushido-btn" data-bushido="jin" aria-selected="false">
+                        <span class="bushido-kanji-mini">仁</span>
+                        <span class="bushido-label">JIN · BIENVEILLANCE</span>
+                    </button>
+                    <button type="button" class="bushido-btn" data-bushido="rei" aria-selected="false">
+                        <span class="bushido-kanji-mini">礼</span>
+                        <span class="bushido-label">REI · RESPECT</span>
+                    </button>
+                    <button type="button" class="bushido-btn" data-bushido="makoto" aria-selected="false">
+                        <span class="bushido-kanji-mini">誠</span>
+                        <span class="bushido-label">MAKOTO · SINCÉRITÉ</span>
+                    </button>
+                    <button type="button" class="bushido-btn" data-bushido="meiyo" aria-selected="false">
+                        <span class="bushido-kanji-mini">名誉</span>
+                        <span class="bushido-label">MEIYO · HONNEUR</span>
+                    </button>
+                    <button type="button" class="bushido-btn" data-bushido="chugi" aria-selected="false">
+                        <span class="bushido-kanji-mini">忠義</span>
+                        <span class="bushido-label">CHUGI · LOYAUTÉ</span>
+                    </button>
+                </div>
+                <div class="bushido-desc" id="bushido-desc" aria-live="polite"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="bushido-overlay" id="bushido-overlay" aria-hidden="true">
+        <div class="bushido-overlay-kanji" id="bushido-overlay-kanji">義</div>
+        <div class="bushido-overlay-title" id="bushido-overlay-title">GI · RECTITUDE</div>
+        <div class="bushido-slash" aria-hidden="true"></div>
+    </div>
+
+    <footer class="section-footer">
+        <a href="../index.html">← RETOUR AU PORTFOLIO</a>
+        <a href="https://www.linkedin.com/in/romain-orhand-72410a13b/" target="_blank" rel="noopener noreferrer">CONTACT LINKEDIN ↗</a>
+    </footer>
+
+    <script src="../js/circuit.js"></script>
+    <script src="../js/page.js"></script>
+    <script>
+        /* Mini-animation canvas hero : lames qui traversent le fond */
+        window.HeroAnim = {
+            start(canvas) {
+                const ctx = canvas.getContext('2d');
+                canvas.width  = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                const W = canvas.width;
+                const H = canvas.height;
+
+                const slashes = [];
+                function addSlash() {
+                    slashes.push({
+                        startX: Math.random() * W * 1.5,
+                        startY: -50,
+                        speed:  2 + Math.random() * 3,
+                        alpha:  0.3 + Math.random() * 0.4,
+                        width:  0.5 + Math.random() * 1.5,
+                        age:    0,
+                        maxAge: 60 + Math.floor(Math.random() * 40),
+                    });
+                }
+
+                for (let i = 0; i < 5; i++) addSlash();
+
+                function draw() {
+                    ctx.fillStyle = 'rgba(5,10,19,0.1)';
+                    ctx.fillRect(0, 0, W, H);
+
+                    slashes.forEach((s, idx) => {
+                        s.age++;
+                        const progress = s.age / s.maxAge;
+                        const fade = progress < 0.3 ? progress / 0.3
+                                   : progress > 0.7 ? 1 - (progress - 0.7) / 0.3
+                                   : 1;
+
+                        const x1 = s.startX;
+                        const y1 = s.startY + s.age * s.speed;
+                        const x2 = x1 - (H + 100);
+                        const y2 = y1 + (H + 100);
+
+                        const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+                        grad.addColorStop(0, `rgba(255,255,255,0)`);
+                        grad.addColorStop(0.4, `rgba(255,51,102,${s.alpha * fade})`);
+                        grad.addColorStop(0.5, `rgba(255,220,220,${s.alpha * fade * 1.2})`);
+                        grad.addColorStop(0.6, `rgba(255,51,102,${s.alpha * fade})`);
+                        grad.addColorStop(1, `rgba(255,255,255,0)`);
+
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.strokeStyle = grad;
+                        ctx.lineWidth   = s.width;
+                        ctx.stroke();
+
+                        if (s.age >= s.maxAge) {
+                            slashes.splice(idx, 1);
+                            addSlash();
+                        }
+                    });
+
+                    requestAnimationFrame(draw);
+                }
+                draw();
+            }
+        };
+
+        (function initBushidoSelector() {
+            const values = {
+                gi: {
+                    kanji: '義',
+                    title: 'GI · RECTITUDE',
+                    description: 'Agir avec droiture, prendre des decisions justes et les assumer avec fermete, meme sous pression.',
+                    visual: { angle: '90deg', thickness: '4px', core: '255, 51, 102', glow: '255, 230, 230' }
+                },
+                yu: {
+                    kanji: '勇',
+                    title: 'YU · COURAGE',
+                    description: 'Avancer malgre l\'incertitude, oser faire ce qui doit etre fait avec lucidite et sang-froid.',
+                    visual: { angle: '0deg', thickness: '5px', core: '255, 122, 36', glow: '255, 214, 170' }
+                },
+                jin: {
+                    kanji: '仁',
+                    title: 'JIN · BIENVEILLANCE',
+                    description: 'Utiliser sa force avec maitrise et humanite, en protegeant et en aidant les autres quand il le faut.',
+                    visual: { angle: '80deg', thickness: '3.6px', core: '66, 209, 255', glow: '204, 244, 255' }
+                },
+                rei: {
+                    kanji: '礼',
+                    title: 'REI · RESPECT',
+                    description: 'Montrer de la consideration pour le dojo, les partenaires et les adversaires a travers l\'attitude et le geste juste.',
+                    visual: { angle: '100deg', thickness: '3px', core: '235, 236, 245', glow: '255, 255, 255' }
+                },
+                makoto: {
+                    kanji: '誠',
+                    title: 'MAKOTO · SINCÉRITÉ',
+                    description: 'Etre vrai dans ses intentions, coherent entre ce que l\'on dit et ce que l\'on fait, sans artifice.',
+                    visual: { angle: '110deg', thickness: '3.8px', core: '242, 120, 255', glow: '254, 216, 255' }
+                },
+                meiyo: {
+                    kanji: '名誉',
+                    title: 'MEIYO · HONNEUR',
+                    description: 'Porter ses engagements avec integrite, proteger sa parole et se comporter dignement en toutes circonstances.',
+                    visual: { angle: '120deg', thickness: '4.6px', core: '255, 206, 64', glow: '255, 241, 193' }
+                },
+                chugi: {
+                    kanji: '忠義',
+                    title: 'CHUGI · LOYAUTÉ',
+                    description: 'Rester fidele a ses valeurs, a son dojo et a sa voie, avec constance dans l\'effort et la relation aux autres.',
+                    visual: { angle: '70deg', thickness: '5.2px', core: '226, 62, 95', glow: '255, 213, 223' }
+                }
+            };
+
+            const selector = document.getElementById('bushido-selector');
+            const desc = document.getElementById('bushido-desc');
+            const overlay = document.getElementById('bushido-overlay');
+            const overlayKanji = document.getElementById('bushido-overlay-kanji');
+            const overlayTitle = document.getElementById('bushido-overlay-title');
+
+            if (!selector || !desc || !overlay || !overlayKanji || !overlayTitle) {
+                return;
+            }
+
+            const buttons = Array.from(selector.querySelectorAll('.bushido-btn'));
+            let overlayTimer = null;
+
+            function setActiveButton(activeId) {
+                buttons.forEach((btn) => {
+                    const isActive = btn.dataset.bushido === activeId;
+                    btn.classList.toggle('is-active', isActive);
+                    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                });
+            }
+
+            function applyOverlayVisual(visual) {
+                const fallback = values.gi.visual;
+                const activeVisual = visual || fallback;
+                overlay.style.setProperty('--slash-angle', activeVisual.angle || fallback.angle);
+                overlay.style.setProperty('--slash-thickness', activeVisual.thickness || fallback.thickness);
+                overlay.style.setProperty('--slash-core', activeVisual.core || fallback.core);
+                overlay.style.setProperty('--slash-glow', activeVisual.glow || fallback.glow);
+            }
+
+            function playOverlay(value) {
+                if (overlayTimer) {
+                    clearTimeout(overlayTimer);
+                }
+
+                applyOverlayVisual(value.visual);
+                overlay.classList.remove('is-active');
+                void overlay.offsetWidth;
+
+                overlayKanji.textContent = value.kanji;
+                overlayTitle.textContent = value.title;
+
+                overlay.setAttribute('aria-hidden', 'false');
+                overlay.classList.add('is-active');
+
+                overlayTimer = window.setTimeout(() => {
+                    overlay.classList.remove('is-active');
+                    overlay.setAttribute('aria-hidden', 'true');
+                }, 1300);
+            }
+
+            function selectValue(id, withAnimation = true) {
+                const value = values[id];
+                if (!value) {
+                    return;
+                }
+
+                setActiveButton(id);
+                desc.textContent = value.description;
+                if (withAnimation) {
+                    playOverlay(value);
+                }
+            }
+
+            buttons.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    selectValue(btn.dataset.bushido, true);
+                });
+            });
+
+            selectValue('gi', false);
+        })();
+    </script>
+</body>
+</html>
