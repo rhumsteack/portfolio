@@ -19,6 +19,51 @@
             font-size: 0.9rem;
         }
 
+        .plasma-intro {
+            margin-top: 0.4rem;
+            color: var(--color-muted);
+            font-size: 0.9rem;
+        }
+
+        .plasma-shell {
+            margin-top: 1rem;
+            border: 1px solid var(--accent-dim);
+            background:
+                radial-gradient(circle at 50% 28%, rgba(160, 255, 255, 0.08), rgba(7, 13, 26, 0.96) 62%),
+                linear-gradient(180deg, rgba(6, 11, 24, 0.92), rgba(6, 11, 24, 0.98));
+            box-shadow: inset 0 0 32px rgba(0, 230, 255, 0.12), 0 20px 34px rgba(0, 0, 0, 0.35);
+            padding: 0.75rem;
+        }
+
+        .plasma-stage {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            min-height: 260px;
+            max-height: 380px;
+            overflow: hidden;
+            border: 1px solid rgba(125, 211, 252, 0.2);
+            background: radial-gradient(circle at center, rgba(5, 10, 19, 0.9), rgba(3, 8, 15, 1));
+            cursor: crosshair;
+        }
+
+        .plasma-stage::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 30%);
+            mix-blend-mode: screen;
+        }
+
+        #plasma-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
         .anim-selector {
             margin-top: 1.1rem;
             display: grid;
@@ -362,6 +407,18 @@
         </div>
 
         <div class="content-block">
+            <h2 class="block-title">LAMPE PLASMA</h2>
+            <p class="plasma-intro">
+                Mini simulation d'une boule à plasma: clique dans la sphère pour attirer les arcs électriques vers ton point de contact.
+            </p>
+            <div class="plasma-shell">
+                <div class="plasma-stage" id="plasma-stage" aria-label="Simulation interactive de lampe plasma" role="img">
+                    <canvas id="plasma-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-block">
             <h2 class="block-title">SÉLECTEUR D'ANIMATIONS</h2>
             <p class="anim-lab-intro">
                 Ici sont listées toutes les animations utilisées sur ce site (et quelques animations bonus). Clique sur celle que tu veux visualiser.
@@ -558,6 +615,287 @@
             }
 
             sets.forEach(set => startRotator(document.getElementById(set.id), set.phrases));
+
+            (function initPlasmaLamp() {
+                const canvas = document.getElementById('plasma-canvas');
+                const stage = document.getElementById('plasma-stage');
+                if (!canvas || !stage) return;
+
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+
+                const state = {
+                    width: 0,
+                    height: 0,
+                    dpr: 1,
+                    centerX: 0,
+                    centerY: 0,
+                    globeRadius: 0,
+                    coreRadius: 0,
+                    attractX: 0,
+                    attractY: 0,
+                    attracting: false,
+                    attractStrength: 0,
+                    pointerId: null,
+                    arcs: [],
+                };
+
+                function createArcProfiles() {
+                    return Array.from({ length: 14 }, (_, idx) => ({
+                        seed: idx * 0.71 + Math.random() * 8,
+                        angleOffset: (Math.random() * 2 - 1) * 0.26,
+                        radiusBias: 0.42 + Math.random() * 0.14,
+                        edgeBias: 0.8 + Math.random() * 0.16,
+                        swing: 0.08 + Math.random() * 0.18,
+                        preferAttract: Math.random(),
+                        hue: 186 + Math.random() * 34,
+                        light: 60 + Math.random() * 18,
+                    }));
+                }
+
+                function resize() {
+                    const rect = stage.getBoundingClientRect();
+                    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                    state.width = rect.width;
+                    state.height = rect.height;
+                    state.dpr = dpr;
+
+                    canvas.width = Math.floor(rect.width * dpr);
+                    canvas.height = Math.floor(rect.height * dpr);
+                    canvas.style.width = rect.width + 'px';
+                    canvas.style.height = rect.height + 'px';
+
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                    state.centerX = rect.width * 0.5;
+                    state.centerY = rect.height * 0.54;
+                    state.globeRadius = Math.min(rect.width, rect.height) * 0.4;
+                    state.coreRadius = Math.max(16, state.globeRadius * 0.14);
+                    state.attractX = state.centerX;
+                    state.attractY = state.centerY;
+                    state.arcs = createArcProfiles();
+                }
+
+                function clampToGlobe(x, y, margin) {
+                    const dx = x - state.centerX;
+                    const dy = y - state.centerY;
+                    const maxR = Math.max(0, state.globeRadius - margin);
+                    const dist = Math.hypot(dx, dy);
+                    if (dist <= maxR || dist === 0) {
+                        return { x, y };
+                    }
+                    const k = maxR / dist;
+                    return {
+                        x: state.centerX + dx * k,
+                        y: state.centerY + dy * k,
+                    };
+                }
+
+                function isInsideGlobe(x, y) {
+                    return Math.hypot(x - state.centerX, y - state.centerY) <= state.globeRadius;
+                }
+
+                function setAttractor(clientX, clientY) {
+                    const rect = stage.getBoundingClientRect();
+                    const localX = clientX - rect.left;
+                    const localY = clientY - rect.top;
+                    const point = clampToGlobe(localX, localY, state.globeRadius * 0.04);
+                    state.attractX = point.x;
+                    state.attractY = point.y;
+                }
+
+                stage.addEventListener('pointerdown', (event) => {
+                    const rect = stage.getBoundingClientRect();
+                    const localX = event.clientX - rect.left;
+                    const localY = event.clientY - rect.top;
+                    if (!isInsideGlobe(localX, localY)) {
+                        return;
+                    }
+
+                    state.pointerId = event.pointerId;
+                    state.attracting = true;
+                    stage.setPointerCapture(event.pointerId);
+                    setAttractor(event.clientX, event.clientY);
+                });
+
+                stage.addEventListener('pointermove', (event) => {
+                    if (!state.attracting) return;
+                    if (state.pointerId !== null && event.pointerId !== state.pointerId) return;
+                    setAttractor(event.clientX, event.clientY);
+                });
+
+                function releaseAttractor(event) {
+                    if (state.pointerId !== null && event.pointerId !== state.pointerId) return;
+                    state.attracting = false;
+                    if (state.pointerId !== null && stage.hasPointerCapture(state.pointerId)) {
+                        stage.releasePointerCapture(state.pointerId);
+                    }
+                    state.pointerId = null;
+                }
+
+                stage.addEventListener('pointerup', releaseAttractor);
+                stage.addEventListener('pointercancel', releaseAttractor);
+                stage.addEventListener('lostpointercapture', () => {
+                    state.attracting = false;
+                    state.pointerId = null;
+                });
+
+                window.addEventListener('resize', resize);
+                resize();
+
+                function drawArc(startX, startY, endX, endY, jitter, color, alpha, seed, time) {
+                    const dx = endX - startX;
+                    const dy = endY - startY;
+                    const dist = Math.hypot(dx, dy);
+                    const normalX = dist > 0 ? -dy / dist : 0;
+                    const normalY = dist > 0 ? dx / dist : 0;
+                    const segments = Math.max(12, Math.floor(dist / 11));
+
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+
+                    for (let i = 1; i < segments; i++) {
+                        const t = i / segments;
+                        const ease = Math.sin(t * Math.PI);
+                        const wave = Math.sin(time * 0.0012 + seed * 3.1 + i * 0.9);
+                        const wander = wave * jitter * ease;
+                        const px = startX + dx * t + normalX * wander;
+                        const py = startY + dy * t + normalY * wander;
+                        ctx.lineTo(px, py);
+                    }
+
+                    ctx.lineTo(endX, endY);
+                    ctx.strokeStyle = color;
+                    ctx.globalAlpha = alpha;
+                    ctx.lineWidth = 1.1;
+                    ctx.shadowBlur = 14;
+                    ctx.shadowColor = color;
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+                }
+
+                function frame(ts) {
+                    state.attractStrength += ((state.attracting ? 1 : 0) - state.attractStrength) * 0.14;
+                    const activeAttract = state.attractStrength > 0.02;
+                    const pulse = (Math.sin(ts * 0.0033) + 1) * 0.5;
+
+                    ctx.clearRect(0, 0, state.width, state.height);
+
+                    const bg = ctx.createRadialGradient(
+                        state.centerX,
+                        state.centerY,
+                        state.coreRadius,
+                        state.centerX,
+                        state.centerY,
+                        state.globeRadius * 1.65
+                    );
+                    bg.addColorStop(0, 'rgba(18, 36, 78, 0.45)');
+                    bg.addColorStop(0.55, 'rgba(6, 18, 42, 0.55)');
+                    bg.addColorStop(1, 'rgba(3, 8, 15, 0.95)');
+                    ctx.fillStyle = bg;
+                    ctx.fillRect(0, 0, state.width, state.height);
+
+                    ctx.beginPath();
+                    ctx.arc(state.centerX, state.centerY, state.globeRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(26, 58, 128, 0.11)';
+                    ctx.fill();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = 'rgba(145, 225, 255, 0.38)';
+                    ctx.shadowBlur = 24;
+                    ctx.shadowColor = 'rgba(109, 219, 255, 0.5)';
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+
+                    const coreGlow = ctx.createRadialGradient(
+                        state.centerX,
+                        state.centerY,
+                        0,
+                        state.centerX,
+                        state.centerY,
+                        state.coreRadius * 3.4
+                    );
+                    coreGlow.addColorStop(0, 'rgba(255, 215, 120, 0.92)');
+                    coreGlow.addColorStop(0.35, 'rgba(252, 142, 189, 0.52)');
+                    coreGlow.addColorStop(1, 'rgba(148, 74, 255, 0)');
+                    ctx.beginPath();
+                    ctx.arc(state.centerX, state.centerY, state.coreRadius * (1.75 + pulse * 0.22), 0, Math.PI * 2);
+                    ctx.fillStyle = coreGlow;
+                    ctx.fill();
+
+                    const arcCount = activeAttract ? 13 : 8;
+                    for (let i = 0; i < arcCount; i++) {
+                        const arc = state.arcs[i % state.arcs.length];
+                        const startAngle = (i / arcCount) * Math.PI * 2 + arc.angleOffset + ts * 0.000126;
+                        const startRadius = state.coreRadius * arc.radiusBias;
+                        const startX = state.centerX + Math.cos(startAngle) * startRadius;
+                        const startY = state.centerY + Math.sin(startAngle) * startRadius;
+
+                        let endX;
+                        let endY;
+                        if (activeAttract && arc.preferAttract > 0.2) {
+                            const targetPull = 0.82 + arc.edgeBias * 0.14;
+                            endX = state.centerX + (state.attractX - state.centerX) * targetPull;
+                            endY = state.centerY + (state.attractY - state.centerY) * targetPull;
+                        } else {
+                            const edgeAngle = startAngle + Math.sin(ts * 0.00045 + arc.seed) * arc.swing;
+                            const edgeRadius = state.globeRadius * arc.edgeBias;
+                            endX = state.centerX + Math.cos(edgeAngle) * edgeRadius;
+                            endY = state.centerY + Math.sin(edgeAngle) * edgeRadius;
+                        }
+
+                        const clamped = clampToGlobe(endX, endY, 1.5);
+                        const hue = arc.hue;
+                        const light = arc.light;
+                        const color = `hsla(${hue}, 100%, ${light}%, 0.95)`;
+                        const jitter = activeAttract ? 7 : 5;
+                        const alpha = activeAttract ? 0.72 : 0.48;
+                        drawArc(startX, startY, clamped.x, clamped.y, jitter, color, alpha, arc.seed, ts);
+
+                        if (Math.sin(ts * 0.0009 + arc.seed * 2) > 0.55) {
+                            const sparkR = 1 + Math.random() * 2;
+                            ctx.beginPath();
+                            ctx.arc(clamped.x, clamped.y, sparkR, 0, Math.PI * 2);
+                            ctx.globalAlpha = 0.75;
+                            ctx.fillStyle = 'rgba(220, 252, 255, 0.95)';
+                            ctx.shadowBlur = 8;
+                            ctx.shadowColor = 'rgba(158, 240, 255, 0.8)';
+                            ctx.fill();
+                            ctx.shadowBlur = 0;
+                        }
+                    }
+
+                    if (activeAttract) {
+                        const ring = 10 + Math.sin(ts * 0.018) * 1.7;
+                        const contactGlow = ctx.createRadialGradient(
+                            state.attractX,
+                            state.attractY,
+                            0,
+                            state.attractX,
+                            state.attractY,
+                            38
+                        );
+                        contactGlow.addColorStop(0, 'rgba(255, 184, 223, 0.3)');
+                        contactGlow.addColorStop(1, 'rgba(255, 120, 196, 0)');
+                        ctx.beginPath();
+                        ctx.arc(state.attractX, state.attractY, 38, 0, Math.PI * 2);
+                        ctx.fillStyle = contactGlow;
+                        ctx.globalAlpha = 0.62 * state.attractStrength;
+                        ctx.fill();
+
+                        ctx.beginPath();
+                        ctx.arc(state.attractX, state.attractY, ring, 0, Math.PI * 2);
+                        ctx.strokeStyle = 'rgba(255, 182, 226, 0.82)';
+                        ctx.globalAlpha = 0.66 * state.attractStrength;
+                        ctx.lineWidth = 1.2;
+                        ctx.stroke();
+                    }
+
+                    ctx.globalAlpha = 1;
+                    requestAnimationFrame(frame);
+                }
+
+                requestAnimationFrame(frame);
+            })();
 
             const animations = {
                 qualite: {
