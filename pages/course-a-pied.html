@@ -630,19 +630,22 @@
             },
             {
                 id: 'vjosa',
-                title: 'Descente de la Vjosa',
+                title: 'Albanie 2026',
                 meta: 'Packraft · Albanie · itinérance',
-                summary: "Pour cette aventure hors format course, la carte montre le fil complet de la Vjosa.",
+                summary: "Une expédition en itinérance avec du packraft, de la rando, du tourisme et... beaucoup d'imprévus",
+                hideProfile: true,
                 sourceLabel: 'Géométrie OpenStreetMap / Nominatim',
                 sourceUrl: 'https://nominatim.openstreetmap.org/',
                 color: '#7af5ff',
-                cityLabels: [
-                    { name: 'Konitsa', lat: 40.0470, lng: 20.7490, dx: 12, dy: -8 },
-                    { name: 'Permet', lat: 40.2330, lng: 20.3510, dx: 12, dy: -8 },
-                    { name: 'Tepelene', lat: 40.2960, lng: 20.0190, dx: 12, dy: -8 },
-                    { name: 'Memaliaj', lat: 40.3510, lng: 19.9810, dx: 12, dy: -8 },
-                    { name: 'Fier', lat: 40.7230, lng: 19.5560, dx: 12, dy: -8 },
-                    { name: 'Narta', lat: 40.4760, lng: 19.4860, dx: 12, dy: -8 }
+                cityLabels: [],
+                contextCities: [
+                    { name: 'Gjirokastër', lat: 40.0758, lng: 20.1389, dx: 10, dy: -6 },
+                    { name: 'Tirana', lat: 41.3275, lng: 19.8187, dx: 10, dy: -6 },
+                    { name: 'Tepelenë', lat: 40.2958, lng: 20.0192, dx: 10, dy: -6 },
+                    { name: 'Berat', lat: 40.7058, lng: 19.9522, dx: 10, dy: -6 },
+                    { name: 'Vlora', lat: 40.4661, lng: 19.4914, dx: 10, dy: -6 },
+                    { name: 'Bristani Bay', lat: 40.3148, lng: 19.3789, dx: 10, dy: -6 },
+                    { name: 'Krujë', lat: 41.5092, lng: 19.7920, dx: 10, dy: -6 }
                 ],
                 load: async () => {
                     const [geojson, localProfile] = await Promise.all([
@@ -656,6 +659,7 @@
 
         let adventureMap;
         let adventureLayer;
+        let adventureOverlayLayer;
         let adventureTravelLayer;
         let adventureCityLayer;
         let adventureCountryLayer;
@@ -862,6 +866,223 @@
 
         function parseVjosa(geojson, localProfile) {
             const coords = geojson.coordinates.flat().map(([lng, lat]) => ({ lat, lng }));
+            const drinoCoords = [
+                { lat: 40.2828815, lng: 20.0419271 },
+                { lat: 40.2787577, lng: 20.0437931 },
+                { lat: 40.2740499, lng: 20.0456320 },
+                { lat: 40.2711494, lng: 20.0523155 },
+                { lat: 40.2684040, lng: 20.0548439 },
+                { lat: 40.2656585, lng: 20.0525453 },
+                { lat: 40.2622518, lng: 20.0528105 },
+                { lat: 40.2593785, lng: 20.0552466 },
+                { lat: 40.2571554, lng: 20.0584160 },
+                { lat: 40.2554523, lng: 20.0629481 },
+                { lat: 40.2547080, lng: 20.0638671 },
+                { lat: 40.2537109, lng: 20.0617166 },
+                { lat: 40.2518642, lng: 20.0628283 },
+                { lat: 40.2514447, lng: 20.0643172 },
+                { lat: 40.2508579, lng: 20.0661488 },
+                { lat: 40.2502424, lng: 20.0674240 },
+                { lat: 40.2494409, lng: 20.0694432 },
+                { lat: 40.2490258, lng: 20.0709622 },
+                { lat: 40.2471554, lng: 20.0727188 },
+                { lat: 40.2453995, lng: 20.0746630 },
+                { lat: 40.2435243, lng: 20.0757382 },
+                { lat: 40.2406756, lng: 20.0777636 },
+                { lat: 40.2378745, lng: 20.0794264 },
+                { lat: 40.2334889, lng: 20.0814518 },
+                { lat: 40.2306159, lng: 20.0836335 },
+                { lat: 40.2288118, lng: 20.0879281 },
+                { lat: 40.2253707, lng: 20.0873468 },
+                { lat: 40.2228458, lng: 20.0890658 },
+                { lat: 40.2202874, lng: 20.0871280 },
+                { lat: 40.2174138, lng: 20.0874968 },
+                { lat: 40.2145783, lng: 20.0875343 },
+                { lat: 40.2120339, lng: 20.0892721 },
+                { lat: 40.2102771, lng: 20.0907037 },
+                { lat: 40.2083544, lng: 20.0903275 },
+                { lat: 40.2057942, lng: 20.0930541 },
+                { lat: 40.2034596, lng: 20.0956109 },
+                { lat: 40.2010102, lng: 20.0922102 },
+                { lat: 40.1986086, lng: 20.0909162 },
+                { lat: 40.1959136, lng: 20.0861666 },
+                { lat: 40.1931556, lng: 20.0828834 },
+                { lat: 40.1903286, lng: 20.0861403 },
+                { lat: 40.1880507, lng: 20.0830209 },
+                { lat: 40.1852059, lng: 20.0801925 },
+                { lat: 40.1825969, lng: 20.0812830 },
+                { lat: 40.1805444, lng: 20.0835475 },
+                { lat: 40.1775581, lng: 20.0797202 },
+                { lat: 40.1747639, lng: 20.0812330 },
+                { lat: 40.1747448, lng: 20.0847025 },
+                { lat: 40.1754756, lng: 20.0911475 },
+                { lat: 40.1760965, lng: 20.0945544 },
+                { lat: 40.1744964, lng: 20.0970799 },
+                { lat: 40.1704489, lng: 20.0973592 },
+                { lat: 40.1667151, lng: 20.0975488 },
+                { lat: 40.1643645, lng: 20.0982772 },
+                { lat: 40.1643552, lng: 20.1025685 },
+                { lat: 40.1640590, lng: 20.1047002 },
+                { lat: 40.1626259, lng: 20.1066381 },
+                { lat: 40.1600700, lng: 20.1052128 },
+                { lat: 40.1579581, lng: 20.1068768 },
+                { lat: 40.1572368, lng: 20.1108366 },
+                { lat: 40.1560194, lng: 20.1178951 },
+                { lat: 40.1493851, lng: 20.1170049 },
+                { lat: 40.1448413, lng: 20.1146604 },
+                { lat: 40.1426081, lng: 20.1093014 },
+                { lat: 40.1373825, lng: 20.1098257 },
+                { lat: 40.1255863, lng: 20.1177353 },
+                { lat: 40.1222501, lng: 20.1175842 },
+                { lat: 40.1211303, lng: 20.1184210 },
+                { lat: 40.1179978, lng: 20.1230632 },
+                { lat: 40.1157762, lng: 20.1227778 },
+                { lat: 40.1105174, lng: 20.1233321 },
+                { lat: 40.1080249, lng: 20.1229379 },
+                { lat: 40.1060842, lng: 20.1240000 },
+                { lat: 40.1055549, lng: 20.1253840 },
+                { lat: 40.1048444, lng: 20.1261923 },
+                { lat: 40.1039178, lng: 20.1279724 },
+                { lat: 40.1016880, lng: 20.1303805 },
+                { lat: 40.0979382, lng: 20.1401235 },
+                { lat: 40.0932243, lng: 20.1382986 },
+                { lat: 40.0872482, lng: 20.1429695 },
+                { lat: 40.0847488, lng: 20.1481197 },
+                { lat: 40.0838863, lng: 20.1520916 },
+                { lat: 40.0810528, lng: 20.1516071 },
+                { lat: 40.0786916, lng: 20.1549459 },
+                { lat: 40.0771349, lng: 20.1580757 },
+                { lat: 40.0754306, lng: 20.1597738 },
+                { lat: 40.0754527, lng: 20.1610237 },
+                { lat: 40.0764987, lng: 20.1612052 },
+                { lat: 40.0746353, lng: 20.1658322 },
+                { lat: 40.0702712, lng: 20.1640407 },
+                { lat: 40.0675499, lng: 20.1678392 },
+                { lat: 40.0648381, lng: 20.1741311 },
+                { lat: 40.0621649, lng: 20.1738306 },
+                { lat: 40.0587301, lng: 20.1736068 },
+                { lat: 40.0581007, lng: 20.1794116 },
+                { lat: 40.0544039, lng: 20.1783077 },
+                { lat: 40.0518044, lng: 20.1788823 },
+                { lat: 40.0494055, lng: 20.1778686 },
+                { lat: 40.0441083, lng: 20.1789434 },
+                { lat: 40.0411439, lng: 20.1770031 },
+                { lat: 40.0388597, lng: 20.1804346 },
+                { lat: 40.0357179, lng: 20.1822829 },
+                { lat: 40.0346515, lng: 20.1873571 },
+                { lat: 40.0325921, lng: 20.1932663 },
+                { lat: 40.0294375, lng: 20.1980728 },
+                { lat: 40.0238976, lng: 20.2018087 },
+                { lat: 40.0211336, lng: 20.2063261 },
+                { lat: 40.0158006, lng: 20.2115979 },
+                { lat: 40.0115218, lng: 20.2163416 },
+                { lat: 40.0092134, lng: 20.2210242 },
+                { lat: 40.0057105, lng: 20.2225729 },
+                { lat: 40.0021592, lng: 20.2264430 },
+                { lat: 39.9996487, lng: 20.2298731 },
+                { lat: 39.9966310, lng: 20.2362608 },
+                { lat: 39.9926944, lng: 20.2387023 },
+                { lat: 39.9866810, lng: 20.2429741 },
+                { lat: 39.9811628, lng: 20.2460739 },
+                { lat: 39.9793379, lng: 20.2476104 },
+                { lat: 39.9769059, lng: 20.2507862 },
+                { lat: 39.9755739, lng: 20.2558765 },
+                { lat: 39.9731165, lng: 20.2596547 },
+                { lat: 39.9704106, lng: 20.2615365 },
+                { lat: 39.9682489, lng: 20.2636244 },
+                { lat: 39.9659539, lng: 20.2662787 },
+                { lat: 39.9635199, lng: 20.2695188 },
+                { lat: 39.9605431, lng: 20.2722010 },
+                { lat: 39.9583646, lng: 20.2729370 },
+                { lat: 39.9560364, lng: 20.2745399 },
+                { lat: 39.9541210, lng: 20.2757265 },
+                { lat: 39.9527961, lng: 20.2769646 },
+                { lat: 39.9507564, lng: 20.2795610 },
+                { lat: 39.9483547, lng: 20.2797541 },
+                { lat: 39.9475824, lng: 20.2820501 },
+                { lat: 39.9477716, lng: 20.2848889 },
+                { lat: 39.9465707, lng: 20.2858545 },
+                { lat: 39.9475166, lng: 20.2881870 },
+                { lat: 39.9465573, lng: 20.2896096 },
+                { lat: 39.9453781, lng: 20.2923498 },
+                { lat: 39.9445062, lng: 20.2947959 },
+                { lat: 39.9435849, lng: 20.2979502 },
+                { lat: 39.9427953, lng: 20.3024992 },
+                { lat: 39.9431736, lng: 20.3056321 },
+                { lat: 39.9434862, lng: 20.3082917 },
+                { lat: 39.9423182, lng: 20.3103731 },
+                { lat: 39.9403275, lng: 20.3112529 },
+                { lat: 39.9396941, lng: 20.3131701 },
+                { lat: 39.9375301, lng: 20.3140089 },
+                { lat: 39.9367655, lng: 20.3160919 },
+                { lat: 39.9363706, lng: 20.3185810 },
+                { lat: 39.9351202, lng: 20.3209199 },
+                { lat: 39.9349063, lng: 20.3241600 },
+                { lat: 39.9354246, lng: 20.3264345 },
+                { lat: 39.9348158, lng: 20.3279258 },
+                { lat: 39.9350955, lng: 20.3297176 },
+                { lat: 39.9357866, lng: 20.3310157 },
+                { lat: 39.9357783, lng: 20.3324320 },
+                { lat: 39.9348076, lng: 20.3334834 },
+                { lat: 39.9339767, lng: 20.3346206 },
+                { lat: 39.9328689, lng: 20.3352068 },
+                { lat: 39.9316979, lng: 20.3357364 },
+                { lat: 39.9308451, lng: 20.3364837 },
+                { lat: 39.9305454, lng: 20.3373577 },
+                { lat: 39.9309321, lng: 20.3382750 },
+                { lat: 39.9310009, lng: 20.3392089 },
+                { lat: 39.9309057, lng: 20.3401351 },
+                { lat: 39.9305145, lng: 20.3406514 },
+                { lat: 39.9302019, lng: 20.3413542 },
+                { lat: 39.9305602, lng: 20.3421682 },
+                { lat: 39.9308292, lng: 20.3429259 },
+                { lat: 39.9306030, lng: 20.3437681 },
+                { lat: 39.9302369, lng: 20.3443529 },
+                { lat: 39.9300682, lng: 20.3453453 },
+                { lat: 39.9299818, lng: 20.3462197 },
+                { lat: 39.9298420, lng: 20.3470404 },
+                { lat: 39.9293278, lng: 20.3473140 },
+                { lat: 39.9286696, lng: 20.3481455 },
+                { lat: 39.9277769, lng: 20.3486658 },
+                { lat: 39.9270282, lng: 20.3490467 },
+                { lat: 39.9264399, lng: 20.3489877 },
+                { lat: 39.9261149, lng: 20.3494115 },
+                { lat: 39.9257159, lng: 20.3510423 },
+                { lat: 39.9253621, lng: 20.3521259 },
+                { lat: 39.9250248, lng: 20.3529467 },
+                { lat: 39.9244982, lng: 20.3534402 },
+                { lat: 39.9239757, lng: 20.3541215 },
+                { lat: 39.9238029, lng: 20.3550173 },
+                { lat: 39.9236425, lng: 20.3555699 },
+                { lat: 39.9231982, lng: 20.3558327 },
+                { lat: 39.9227415, lng: 20.3553553 },
+                { lat: 39.9218940, lng: 20.3550656 },
+                { lat: 39.9212234, lng: 20.3554089 },
+                { lat: 39.9206845, lng: 20.3560848 },
+                { lat: 39.9206228, lng: 20.3568305 },
+                { lat: 39.9206228, lng: 20.3575922 },
+                { lat: 39.9202196, lng: 20.3584935 },
+                { lat: 39.9197218, lng: 20.3589441 },
+                { lat: 39.9191087, lng: 20.3591211 },
+                { lat: 39.9184710, lng: 20.3587134 },
+                { lat: 39.9177757, lng: 20.3585578 },
+                { lat: 39.9170968, lng: 20.3587617 },
+                { lat: 39.9165803, lng: 20.3599016 },
+                { lat: 39.9160767, lng: 20.3607398 },
+                { lat: 39.9154343, lng: 20.3612045 },
+                { lat: 39.9148668, lng: 20.3618194 },
+                { lat: 39.9143899, lng: 20.3630251 },
+                { lat: 39.9142007, lng: 20.3637385 },
+                { lat: 39.9138139, lng: 20.3646451 },
+                { lat: 39.9131391, lng: 20.3655678 },
+                { lat: 39.9124804, lng: 20.3666796 },
+                { lat: 39.9121265, lng: 20.3676505 },
+                { lat: 39.9117685, lng: 20.3684284 },
+                { lat: 39.9115262, lng: 20.3691888 },
+                { lat: 39.9112340, lng: 20.3697413 },
+                { lat: 39.9111719, lng: 20.3704454 },
+                { lat: 39.9109579, lng: 20.3709175 }
+            ];
             const localPoints = Array.isArray(localProfile?.points)
                 ? localProfile.points
                 : Object.values(localProfile?.points ?? {});
@@ -870,7 +1091,18 @@
                 elevationM: Number(point.elevationM ?? point.y ?? point.ele)
             })));
 
-            return { coords, profile };
+            return {
+                coords,
+                profile,
+                overlays: [
+                    {
+                        coords: drinoCoords,
+                        color: '#7af5ff',
+                        weight: 3,
+                        opacity: 0.9
+                    }
+                ]
+            };
         }
 
         function formatDistance(distanceKm) {
@@ -995,9 +1227,14 @@
             ].join('');
         }
 
-        function renderMap(coords, color, cityLabels = [], contextCities = [], travelRoute = []) {
+        function renderMap(coords, color, cityLabels = [], contextCities = [], travelRoute = [], overlays = []) {
             if (adventureLayer) {
                 adventureMap.removeLayer(adventureLayer);
+            }
+
+            if (adventureOverlayLayer) {
+                adventureMap.removeLayer(adventureOverlayLayer);
+                adventureOverlayLayer = null;
             }
 
             if (adventureTravelLayer) {
@@ -1040,9 +1277,33 @@
                 opacity: 0.9
             }).addTo(adventureMap);
 
+            if (Array.isArray(overlays) && overlays.length > 0) {
+                const overlayLines = overlays
+                    .filter((overlay) => Array.isArray(overlay?.coords) && overlay.coords.length >= 2)
+                    .map((overlay) => L.polyline(
+                        overlay.coords.map((coord) => [coord.lat, coord.lng]),
+                        {
+                            color: overlay.color || '#2f8bff',
+                            weight: Number.isFinite(overlay.weight) ? overlay.weight : 3,
+                            opacity: Number.isFinite(overlay.opacity) ? overlay.opacity : 0.9
+                        }
+                    ));
+
+                if (overlayLines.length > 0) {
+                    adventureOverlayLayer = L.layerGroup(overlayLines).addTo(adventureMap);
+                }
+            }
+
             const bounds = adventureLayer.getBounds();
             if (bounds.isValid()) {
-                adventureMap.fitBounds(bounds.pad(0.08));
+                let finalBounds = bounds;
+                if (adventureOverlayLayer) {
+                    const overlayBounds = adventureOverlayLayer.getBounds?.();
+                    if (overlayBounds?.isValid?.()) {
+                        finalBounds = finalBounds.extend(overlayBounds);
+                    }
+                }
+                adventureMap.fitBounds(finalBounds.pad(0.08));
             }
 
             const markers = [];
@@ -1221,20 +1482,27 @@
         }
 
         async function showAdventure(adventure) {
+            const profileSection = document.querySelector('.adventure-profile');
+            if (profileSection) {
+                profileSection.style.display = adventure.hideProfile ? 'none' : '';
+            }
+
             document.getElementById('adventure-title').textContent = adventure.title;
             document.getElementById('adventure-summary').textContent = adventure.summary;
             document.getElementById('adventure-source').innerHTML = `${adventure.sourceLabel}<br><a href="${adventure.sourceUrl}" target="_blank" rel="noopener noreferrer">source</a>`;
-            document.getElementById('adventure-profile-note').textContent = 'Lecture en cours…';
-            document.getElementById('adventure-profile-plot').innerHTML = '<div class="adventure-empty">Chargement du profil…</div>';
+            if (!adventure.hideProfile) {
+                document.getElementById('adventure-profile-note').textContent = 'Lecture en cours…';
+                document.getElementById('adventure-profile-plot').innerHTML = '<div class="adventure-empty">Chargement du profil…</div>';
+            }
 
             try {
-                const { coords, profile, metricsOverride, profileNote: payloadProfileNote } = await getAdventurePayload(adventure);
-                renderMap(coords, adventure.color, adventure.cityLabels, adventure.contextCities || [], adventure.travelRoute || []);
+                const { coords, profile, metricsOverride, profileNote: payloadProfileNote, overlays } = await getAdventurePayload(adventure);
+                renderMap(coords, adventure.color, adventure.cityLabels, adventure.contextCities || [], adventure.travelRoute || [], overlays || []);
 
                 let finalProfile = profile;
                 let profileNote = payloadProfileNote || 'Profil extrait de la trace locale.';
 
-                if ((!finalProfile || finalProfile.length < 2) && adventure.id === 'vjosa') {
+                if (!adventure.hideProfile && (!finalProfile || finalProfile.length < 2) && adventure.id === 'vjosa') {
                     try {
                         finalProfile = await fetchElevationProfile(coords);
                         profileNote = 'Profil calculé à partir du relief via Open-Meteo.';
@@ -1245,11 +1513,15 @@
                 }
 
                 renderMetrics(calculateMetrics(coords, finalProfile, metricsOverride));
-                renderProfile(finalProfile, profileNote);
+                if (!adventure.hideProfile) {
+                    renderProfile(finalProfile, profileNote);
+                }
             } catch (error) {
                 document.getElementById('adventure-metrics').innerHTML = '';
-                document.getElementById('adventure-profile-note').textContent = 'Chargement impossible.';
-                document.getElementById('adventure-profile-plot').innerHTML = '<div class="adventure-empty">Impossible de charger les données de cette aventure. En local, ouvre la page via un serveur HTTP ou conserve les fichiers .data.js à jour.</div>';
+                if (!adventure.hideProfile) {
+                    document.getElementById('adventure-profile-note').textContent = 'Chargement impossible.';
+                    document.getElementById('adventure-profile-plot').innerHTML = '<div class="adventure-empty">Impossible de charger les données de cette aventure. En local, ouvre la page via un serveur HTTP ou conserve les fichiers .data.js à jour.</div>';
+                }
             }
         }
 
